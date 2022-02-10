@@ -6,7 +6,7 @@ import { u64 } from '@solana/spl-token';
 import * as metaplex from '@metaplex/js';
 import { KanonProgramConfig } from '..';
 import { Program, Provider, BN } from "@project-serum/anchor";
-export default class KanonProgramAdapter {
+export default class KanonAuctionProgramAdapter {
     protected _provider: Provider;
     protected _program: Program;
     protected _config: KanonProgramConfig;

@@ -42,7 +42,7 @@ const anchor_1 = require("@project-serum/anchor");
 const constant_1 = require("../helpers/constant");
 const util_1 = require("../helpers/util");
 const schema_1 = require("../helpers/schema");
-class KanonProgramAdapter {
+class KanonAuctionProgramAdapter {
     constructor(provider, config) {
         this.MetadataDataData = metaplex.programs.metadata.MetadataDataData;
         this.CreateMetadata = metaplex.programs.metadata.CreateMetadata;
@@ -490,5 +490,5 @@ class KanonProgramAdapter {
         });
     }
 }
-exports.default = KanonProgramAdapter;
-//# sourceMappingURL=KanonProgramAdapter.js.map
+exports.default = KanonAuctionProgramAdapter;
+//# sourceMappingURL=KanonAuctionProgramAdapter.js.map

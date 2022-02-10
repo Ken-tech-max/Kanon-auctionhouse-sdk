@@ -19,9 +19,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.util = exports.constant = exports.KanonProgramAdapter = void 0;
+exports.util = exports.constant = exports.KanonAuctionProgramAdapter = void 0;
 var adapters_1 = require("./adapters");
-Object.defineProperty(exports, "KanonProgramAdapter", { enumerable: true, get: function () { return adapters_1.KanonProgramAdapter; } });
+Object.defineProperty(exports, "KanonAuctionProgramAdapter", { enumerable: true, get: function () { return adapters_1.KanonAuctionProgramAdapter; } });
 exports.constant = __importStar(require("./helpers/constant"));
 exports.util = __importStar(require("./helpers/util"));
 //# sourceMappingURL=index.js.map
