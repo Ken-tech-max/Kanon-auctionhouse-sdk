@@ -1,4 +1,4 @@
-export { KanonProgramAdapter } from "./adapters";
+export { KanonAuctionProgramAdapter } from "./adapters";
 export { KanonProgramConfig } from "./configs";
 // export { KanonProgramMainnet } from "./types/kanon_program_mainnet";
 export { AuctionHouse } from "./types/kanon_program_devnet";

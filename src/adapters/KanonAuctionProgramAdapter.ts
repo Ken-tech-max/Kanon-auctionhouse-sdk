@@ -29,7 +29,7 @@ import { getAtaForMint, getAuctionHouseBuyerEscrow, getAuctionHouseProgramAsSign
 import { decodeMetadata, Metadata } from '../helpers/schema';
 
 
-export default class KanonProgramAdapter {
+export default class KanonAuctionProgramAdapter {
   protected _provider: Provider;
   protected _program: Program;
   protected _config: KanonProgramConfig;

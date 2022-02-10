@@ -1,1 +1,1 @@
-export { default as KanonProgramAdapter } from "./KanonProgramAdapter";
+export { default as KanonAuctionProgramAdapter } from "./KanonAuctionProgramAdapter";
