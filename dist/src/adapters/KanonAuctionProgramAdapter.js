@@ -132,18 +132,31 @@ class KanonAuctionProgramAdapter {
     /**
        * create auction house
       */
-    createAuctionHouse(requiresSignOff) {
+    createAuctionHouse(requiresSignOff, treasuryWithdrawalDestination, feeWithdrawalDestination) {
         return __awaiter(this, void 0, void 0, function* () {
             const sellerFeeBasisPoints = 1;
             const canChangeSalePrice = true;
             const authorityClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            let twdKey, fwdKey, tMintKey;
+            if (!treasuryWithdrawalDestination) {
+                twdKey = this._provider.wallet.publicKey;
+            }
+            else {
+                twdKey = new anchor.web3.PublicKey(treasuryWithdrawalDestination);
+            }
+            if (!feeWithdrawalDestination) {
+                fwdKey = this._provider.wallet.publicKey;
+            }
+            else {
+                fwdKey = new anchor.web3.PublicKey(feeWithdrawalDestination);
+            }
             let acc = {
                 treasuryMint: this.treasuryMint,
                 payer: this.authority,
                 authority: this.authority,
-                feeWithdrawalDestination: this.feeWithdrawalDestination,
+                feeWithdrawalDestination: fwdKey,
                 treasuryWithdrawalDestination: this.treasuryWithdrawalDestination,
-                treasuryWithdrawalDestinationOwner: this.treasuryWithdrawalDestinationOwner,
+                treasuryWithdrawalDestinationOwner: twdKey,
                 auctionHouse: this.auctionHouse,
                 auctionHouseFeeAccount: this.auctionHouseFeeAccount,
                 auctionHouseTreasury: this.auctionHouseTreasury,
@@ -487,6 +500,44 @@ class KanonAuctionProgramAdapter {
             }));
             const txSig = yield authorityClient.provider.send(tx);
             return txSig;
+        });
+    }
+    /**
+     * get auction house accounts
+     */
+    getAuctionHouseDetails() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let authorityClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            const auctionHouseObj = yield authorityClient.account.auctionHouse.fetch(this.auctionHouse);
+            return auctionHouseObj;
+        });
+    }
+    /**
+     * get fee account balance
+     */
+    getFeeAccBalance() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let authorityClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            const auctionHouseObj = yield authorityClient.account.auctionHouse.fetch(this.auctionHouse);
+            const feeAmount = yield authorityClient.provider.connection.getBalance(
+            //@ts-ignore
+            auctionHouseObj.auctionHouseFeeAccount);
+            return feeAmount;
+        });
+    }
+    /**
+     * get fee account balance
+     */
+    getTreasuryAccBalance() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let authorityClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            const auctionHouseObj = yield authorityClient.account.auctionHouse.fetch(this.auctionHouse);
+            const treasuryAmount = yield (0, util_1.getTokenAmount)(authorityClient, 
+            //@ts-ignore
+            auctionHouseObj.auctionHouseTreasury, 
+            //@ts-ignore
+            auctionHouseObj.treasuryMint);
+            return treasuryAmount;
         });
     }
 }

@@ -14,3 +14,4 @@ export declare const getAuctionHouseProgramAsSigner: () => Promise<[
 ]>;
 export declare const decodeMetadata: (buffer: Buffer) => Metadata;
 export declare const getPriceWithMantissa: (price: number, mint: web3.PublicKey, walletKeyPair: any, anchorProgram: Program) => Promise<number>;
+export declare function getTokenAmount(anchorProgram: Program, account: web3.PublicKey, mint: web3.PublicKey): Promise<number>;

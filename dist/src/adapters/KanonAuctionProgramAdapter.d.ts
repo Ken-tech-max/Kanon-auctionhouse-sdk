@@ -4,6 +4,7 @@ import * as anchor from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
 import { u64 } from '@solana/spl-token';
 import * as metaplex from '@metaplex/js';
+import { AuctionHouse } from '../types/kanon_program_devnet';
 import { KanonProgramConfig } from '..';
 import { Program, Provider, BN } from "@project-serum/anchor";
 export default class KanonAuctionProgramAdapter {
@@ -58,7 +59,7 @@ export default class KanonAuctionProgramAdapter {
     /**
        * create auction house
       */
-    createAuctionHouse(requiresSignOff: boolean): Promise<anchor.web3.Transaction>;
+    createAuctionHouse(requiresSignOff: boolean, treasuryWithdrawalDestination: PublicKey, feeWithdrawalDestination: PublicKey): Promise<anchor.web3.Transaction>;
     /**
      *
      * deposit into escrow acount
@@ -78,7 +79,7 @@ export default class KanonAuctionProgramAdapter {
     /**
      * Execute Sale
      *
-     */ 
+     */
     executeSales(mint: PublicKey, buyerWallet: PublicKey, sellerWallet: PublicKey, buyPriceAdjusted: u64, tokenSizeAdjusted: u64): Promise<anchor.web3.Transaction>;
     /**
      * Withdraws from the fee account
@@ -90,4 +91,61 @@ export default class KanonAuctionProgramAdapter {
     withFromTreasury(amount: any): Promise<any>;
     /**Update auction house */
     updateAuctionHouse(requiresSignOff: boolean): Promise<string>;
+    /**
+     * get auction house accounts
+     */
+    getAuctionHouseDetails(): Promise<import("@project-serum/anchor/dist/cjs/program/namespace/types").TypeDef<{
+        name: "auctionHouse";
+        type: {
+            kind: "struct";
+            fields: [{
+                name: "auctionHouseFeeAccount";
+                type: "publicKey";
+            }, {
+                name: "auctionHouseTreasury";
+                type: "publicKey";
+            }, {
+                name: "treasuryWithdrawalDestination";
+                type: "publicKey";
+            }, {
+                name: "feeWithdrawalDestination";
+                type: "publicKey";
+            }, {
+                name: "treasuryMint";
+                type: "publicKey";
+            }, {
+                name: "authority";
+                type: "publicKey";
+            }, {
+                name: "creator";
+                type: "publicKey";
+            }, {
+                name: "bump";
+                type: "u8";
+            }, {
+                name: "treasuryBump";
+                type: "u8";
+            }, {
+                name: "feePayerBump";
+                type: "u8";
+            }, {
+                name: "sellerFeeBasisPoints";
+                type: "u16";
+            }, {
+                name: "requiresSignOff";
+                type: "bool";
+            }, {
+                name: "canChangeSalePrice";
+                type: "bool";
+            }];
+        };
+    }, anchor.IdlTypes<AuctionHouse>>>;
+    /**
+     * get fee account balance
+     */
+    getFeeAccBalance(): Promise<number>;
+    /**
+     * get fee account balance
+     */
+    getTreasuryAccBalance(): Promise<number>;
 }

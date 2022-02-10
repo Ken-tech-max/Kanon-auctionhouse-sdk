@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getPriceWithMantissa = exports.decodeMetadata = exports.getAuctionHouseProgramAsSigner = exports.getAuctionHouseBuyerEscrow = exports.getAuctionHouseTradeState = exports.getMetadata = exports.getAtaForMint = exports.hexToBytes = exports.getUnixTimestamp = void 0;
+exports.getTokenAmount = exports.getPriceWithMantissa = exports.decodeMetadata = exports.getAuctionHouseProgramAsSigner = exports.getAuctionHouseBuyerEscrow = exports.getAuctionHouseTradeState = exports.getMetadata = exports.getAtaForMint = exports.hexToBytes = exports.getUnixTimestamp = void 0;
 const anchor_1 = require("@project-serum/anchor");
 const spl_token_1 = require("@solana/spl-token");
 const constant_1 = require("../helpers/constant");
@@ -93,4 +93,22 @@ const getPriceWithMantissa = (price, mint, walletKeyPair, anchorProgram) => __aw
     return Math.ceil(price * mantissa);
 });
 exports.getPriceWithMantissa = getPriceWithMantissa;
+function getTokenAmount(anchorProgram, account, mint) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let amount = 0;
+        if (!mint.equals(constant_1.WRAPPED_SOL_MINT)) {
+            try {
+                const token = yield anchorProgram.provider.connection.getTokenAccountBalance(account);
+                amount = token.value.uiAmount * Math.pow(10, token.value.decimals);
+            }
+            catch (_a) {
+            }
+        }
+        else {
+            amount = yield anchorProgram.provider.connection.getBalance(account);
+        }
+        return amount;
+    });
+}
+exports.getTokenAmount = getTokenAmount;
 //# sourceMappingURL=util.js.map
