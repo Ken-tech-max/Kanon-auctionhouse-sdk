@@ -78,7 +78,7 @@ export default class KanonAuctionProgramAdapter {
     /**
      * Execute Sale
      *
-     */
+     */ 
     executeSales(mint: PublicKey, buyerWallet: PublicKey, sellerWallet: PublicKey, buyPriceAdjusted: u64, tokenSizeAdjusted: u64): Promise<anchor.web3.Transaction>;
     /**
      * Withdraws from the fee account

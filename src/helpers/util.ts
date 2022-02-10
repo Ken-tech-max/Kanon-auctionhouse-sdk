@@ -4,7 +4,8 @@ import {
   Token,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
-import { TOKEN_METADATA_PROGRAM_ID, AUCTION_HOUSE,AUCTION_HOUSE_PROGRAM_ID} from "../helpers/constant"
+import { TOKEN_METADATA_PROGRAM_ID, AUCTION_HOUSE,AUCTION_HOUSE_PROGRAM_ID,  WRAPPED_SOL_MINT,
+} from "../helpers/constant"
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { BinaryReader, BinaryWriter, deserializeUnchecked } from 'borsh';
 import { Metadata, METADATA_SCHEMA } from "./schema";
@@ -141,4 +142,23 @@ export const getPriceWithMantissa = async (
   const mantissa = 10 ** mintInfo.decimals;
 
   return Math.ceil(price * mantissa);
+}
+
+export async function getTokenAmount(
+  anchorProgram: Program,
+  account: web3.PublicKey,
+  mint: web3.PublicKey,
+): Promise<number> {
+  let amount = 0;
+  if (!mint.equals(WRAPPED_SOL_MINT)) {
+    try {
+      const token:any = await anchorProgram.provider.connection.getTokenAccountBalance(account);
+      amount = token.value.uiAmount * Math.pow(10, token.value.decimals);
+    } catch{
+
+    }
+  } else {
+    amount = await anchorProgram.provider.connection.getBalance(account);
+  }
+  return amount;
 }
