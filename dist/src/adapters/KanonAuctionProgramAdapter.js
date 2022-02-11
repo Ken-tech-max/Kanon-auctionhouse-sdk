@@ -114,7 +114,7 @@ class KanonAuctionProgramAdapter {
                 this.PREFIX,
                 _auctionHouse.toBuffer(),
                 this.FEE_PAYER,
-            ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
+            ], this._program_id);
             const [_auctionHouseTreasury, _auctionHouseTreasuryBump] = yield anchor.web3.PublicKey.findProgramAddress([
                 this.PREFIX,
                 _auctionHouse.toBuffer(),
@@ -496,7 +496,7 @@ class KanonAuctionProgramAdapter {
      */
     getAuctionHouseDetails() {
         return __awaiter(this, void 0, void 0, function* () {
-            let authorityClient = this._program;
+            let authorityClient = this.auctionHouseProgram;
             const auctionHouseObj = yield authorityClient.account.auctionHouse.fetchNullable(this.auctionHouse);
             return auctionHouseObj;
         });
