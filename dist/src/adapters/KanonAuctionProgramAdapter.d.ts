@@ -86,11 +86,11 @@ export default class KanonAuctionProgramAdapter {
     /**
      * Withdraws from the fee account
      */
-    withdrawFromFee(amount: any): Promise<anchor.web3.Transaction>;
+    withdrawFromFee(amount: BN): Promise<anchor.web3.Transaction>;
     /**
      * Withdraws from the treasury account
      */
-    withFromTreasury(amount: any): Promise<any>;
+    withFromTreasury(amount: BN): Promise<any>;
     /**Update auction house */
     updateAuctionHouse(requiresSignOff: boolean, treasuryWithdrawalDestination: PublicKey, feeWithdrawalDestination: PublicKey, sfbp: any, canChangeSalePrice: boolean): Promise<any>;
     /**

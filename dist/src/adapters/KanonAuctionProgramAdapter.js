@@ -407,7 +407,7 @@ class KanonAuctionProgramAdapter {
                 auctionHouse: this.auctionHouse,
                 systemProgram: this.systemProgram,
             };
-            const amountAdjusted = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(amount, this.treasuryMint, this._provider.wallet.publicKey, authorityClient));
+            const amountAdjusted = amount;
             let tx = new web3_js_1.Transaction();
             tx.add(yield authorityClient.instruction.withdrawFromFee(amountAdjusted, {
                 accounts: acc,
@@ -430,7 +430,7 @@ class KanonAuctionProgramAdapter {
                 tokenProgram: this.tokenProgram,
                 systemProgram: this.systemProgram,
             };
-            const amountAdjusted = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(amount, this.treasuryMint, this._provider.wallet.publicKey, authorityClient));
+            const amountAdjusted = amount;
             let tx = new web3_js_1.Transaction();
             tx.add(yield authorityClient.instruction.withdrawFromTreasury(amountAdjusted, {
                 accounts: acc
