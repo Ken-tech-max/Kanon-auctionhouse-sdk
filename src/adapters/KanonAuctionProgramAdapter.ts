@@ -467,14 +467,31 @@ export default class KanonAuctionProgramAdapter {
     //   ),
     // );
 
-    const [tradeState, tradeBump] = await getAuctionHouseTradeState(
-      this.auctionHouse,
-      this._provider.wallet.publicKey,
-      tokenAccountKey,
-      this.treasuryMint,
-      mintKey,
-      tokenSizeAdjusted,
-      buyPriceAdjusted,
+    // const [tradeState, tradeBump] = await getAuctionHouseTradeState(
+    //   this.auctionHouse,
+    //   this._provider.wallet.publicKey,
+    //   tokenAccountKey,
+    //   this.treasuryMint,
+    //   mintKey,
+    //   tokenSize,
+    //   buyPrice,
+    // );
+
+    const buyerPrice = new u64(2*10**9);
+    const tokenSize = new u64(1);
+    const zero = new u64(0);
+    const [tradeState, tradeBump] = await PublicKey.findProgramAddress(
+      [
+        this.PREFIX,
+        this._provider.wallet.publicKey.toBuffer(),
+        this.auctionHouse.toBuffer(),
+        tokenAccountKey.toBuffer(),
+        this.treasuryMint.toBuffer(),
+        mintKey.toBuffer(),
+        buyerPrice.toBuffer(),
+        tokenSize.toBuffer(),
+      ],
+      AUCTION_HOUSE_PROGRAM_ID,
     );
 
     const [freeTradeState, freeTradeBump] = await getAuctionHouseTradeState(
