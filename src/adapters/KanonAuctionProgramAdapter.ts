@@ -173,12 +173,14 @@ export default class KanonAuctionProgramAdapter {
 
     const auctionObj =  await this.getAuctionHouseDetails()
 
-    const _anchorProgram = await loadAuctionHouseProgram(
-      this._provider,
-    );
+    const idl:any = await Program.fetchIdl(AUCTION_HOUSE_PROGRAM_ID, this._provider);
+    const _anchorProgram = await new Program(idl, AUCTION_HOUSE_PROGRAM_ID, this._provider);
+    // const _anchorProgram = await loadAuctionHouseProgram(
+    //   this._provider,
+    // );
 
 
-    this.auctionHouseProgram = _anchorProgram
+    this.auctionHouseProgram = _anchorProgram;
     this.auctionHouse = _auctionHouse;
     this.bump = _bump;
     this.auctionHouseFeeAccount = _auctionHouseFeeAccount;
@@ -753,7 +755,7 @@ export default class KanonAuctionProgramAdapter {
    * get auction house accounts
    */
   public async getAuctionHouseDetails() {
-    let authorityClient = this.auctionHouseProgram;
+    let authorityClient = this._program;
     const auctionHouseObj :any= await authorityClient.account.auctionHouse.fetchNullable(
       this.auctionHouse,
     );

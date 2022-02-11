@@ -130,7 +130,11 @@ class KanonAuctionProgramAdapter {
                 this.SIGNER,
             ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
             const auctionObj = yield this.getAuctionHouseDetails();
-            const _anchorProgram = yield (0, util_1.loadAuctionHouseProgram)(this._provider);
+            const idl = yield anchor_1.Program.fetchIdl(constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            const _anchorProgram = yield new anchor_1.Program(idl, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            // const _anchorProgram = await loadAuctionHouseProgram(
+            //   this._provider,
+            // );
             this.auctionHouseProgram = _anchorProgram;
             this.auctionHouse = _auctionHouse;
             this.bump = _bump;
@@ -496,7 +500,7 @@ class KanonAuctionProgramAdapter {
      */
     getAuctionHouseDetails() {
         return __awaiter(this, void 0, void 0, function* () {
-            let authorityClient = this.auctionHouseProgram;
+            let authorityClient = this._program;
             const auctionHouseObj = yield authorityClient.account.auctionHouse.fetchNullable(this.auctionHouse);
             return auctionHouseObj;
         });
