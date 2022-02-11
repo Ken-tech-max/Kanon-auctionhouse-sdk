@@ -144,7 +144,7 @@ export default class KanonAuctionProgramAdapter {
         _auctionHouse.toBuffer(),
         this.FEE_PAYER,
       ],
-      AUCTION_HOUSE_PROGRAM_ID,
+      this._program_id,
     );
     const [_auctionHouseTreasury, _auctionHouseTreasuryBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
@@ -753,8 +753,8 @@ export default class KanonAuctionProgramAdapter {
    * get auction house accounts
    */
   public async getAuctionHouseDetails() {
-    let authorityClient = this._program;
-    const auctionHouseObj:any = await authorityClient.account.auctionHouse.fetchNullable(
+    let authorityClient = this.auctionHouseProgram;
+    const auctionHouseObj :any= await authorityClient.account.auctionHouse.fetchNullable(
       this.auctionHouse,
     );
     return auctionHouseObj;
