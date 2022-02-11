@@ -35,9 +35,8 @@ const anchor = __importStar(require("@project-serum/anchor"));
 const web3_js_1 = require("@solana/web3.js");
 const spl_token_1 = require("@solana/spl-token");
 const metaplex = __importStar(require("@metaplex/js"));
-const kanon_program_devnet_1 = require("../types/kanon_program_devnet");
 const kanon_program_devnet_json_1 = __importDefault(require("../idl/kanon_program_devnet.json"));
-const kanon_program_devnet_json_2 = __importDefault(require("../idl/kanon_program_devnet.json")); //change when mainnet idl is added
+const kanon_program_mainnet_json_1 = __importDefault(require("../idl/kanon_program_mainnet.json")); //change when mainnet idl is added
 const anchor_1 = require("@project-serum/anchor");
 const constant_1 = require("../helpers/constant");
 const util_1 = require("../helpers/util");
@@ -68,18 +67,22 @@ class KanonAuctionProgramAdapter {
         this.bump = 0;
         this.buyerEscrowBump = 0;
         // initialize anchor program instance
+        // initialize anchor program instance
         this._program_id = config.isDevNet ?
             new web3_js_1.PublicKey(kanon_program_devnet_json_1.default.metadata.address) :
-            new web3_js_1.PublicKey(kanon_program_devnet_json_2.default.metadata.address);
+            new web3_js_1.PublicKey(kanon_program_mainnet_json_1.default.metadata.address);
         this._program = config.isDevNet ?
             new anchor_1.Program(kanon_program_devnet_json_1.default, this._program_id, provider) :
-            new anchor_1.Program(kanon_program_devnet_json_2.default, this._program_id, provider);
+            new anchor_1.Program(kanon_program_mainnet_json_1.default, this._program_id, provider);
         this._provider = provider;
         this._config = config;
+        this.authority = config.authority; //Important this must be admin's public key
     }
-    ;
     getProgram() {
         return this._program;
+    }
+    getAuctionHouseProgram() {
+        return this.auctionHouseProgram;
     }
     getProvider() {
         return this._provider;
@@ -89,10 +92,6 @@ class KanonAuctionProgramAdapter {
      */
     refreshByWallet() {
         return __awaiter(this, void 0, void 0, function* () {
-            this.authority = this._provider.wallet.publicKey; //Important this must be admin's public key
-            this.feeWithdrawalDestination = this.authority;
-            this.treasuryWithdrawalDestination = this.authority;
-            this.treasuryWithdrawalDestinationOwner = this.authority;
             const [_auctionHouse, _bump] = yield web3_js_1.PublicKey.findProgramAddress([
                 this.PREFIX,
                 this.authority.toBuffer(),
@@ -117,6 +116,9 @@ class KanonAuctionProgramAdapter {
                 this.PREFIX,
                 this.SIGNER,
             ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
+            const auctionObj = yield this.getAuctionHouseDetails();
+            const _anchorProgram = yield (0, util_1.loadAuctionHouseProgram)(this._provider);
+            this.auctionHouseProgram = _anchorProgram;
             this.auctionHouse = _auctionHouse;
             this.bump = _bump;
             this.auctionHouseFeeAccount = _auctionHouseFeeAccount;
@@ -127,17 +129,19 @@ class KanonAuctionProgramAdapter {
             this.buyerEscrowBump = _buyerEscrowBump;
             this.programAsSigner = _programAsSigner;
             this.programAsSignerBump = _programAsSignerBump;
+            this.feeWithdrawalDestination = auctionObj.feeWithdrawalDestination.toBase58();
+            this.treasuryWithdrawalDestination = auctionObj.treasuryWithdrawalDestination.toBase58();
+            this.treasuryWithdrawalDestinationOwner = this.authority;
         });
     }
     /**
        * create auction house
       */
-    createAuctionHouse(requiresSignOff, treasuryWithdrawalDestination, feeWithdrawalDestination) {
+    createAuctionHouse(requiresSignOff, treasuryWithdrawalDestination, feeWithdrawalDestination, sfbp, canChangeSalePrice) {
         return __awaiter(this, void 0, void 0, function* () {
-            const sellerFeeBasisPoints = 1;
-            const canChangeSalePrice = true;
-            const authorityClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
-            let twdKey, fwdKey, tMintKey;
+            const sellerFeeBasisPoints = parseInt(sfbp);
+            const authorityClient = this.auctionHouseProgram;
+            let twdKey, fwdKey;
             if (!treasuryWithdrawalDestination) {
                 twdKey = this._provider.wallet.publicKey;
             }
@@ -176,14 +180,14 @@ class KanonAuctionProgramAdapter {
      *
      * deposit into escrow acount
      *  */
-    deposit(amount) {
+    deposit(amount, transferAuthority) {
         return __awaiter(this, void 0, void 0, function* () {
-            const buyerClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            const buyerClient = this.auctionHouseProgram;
             let acc = {
                 accounts: {
                     wallet: this._provider.wallet.publicKey,
                     paymentAccount: this._provider.wallet.publicKey,
-                    transferAuthority: this._provider.wallet.publicKey,
+                    transferAuthority: transferAuthority,
                     escrowPaymentAccount: this.buyerEscrow,
                     treasuryMint: this.treasuryMint,
                     authority: this.authority,
@@ -193,9 +197,7 @@ class KanonAuctionProgramAdapter {
                     systemProgram: this.systemProgram,
                     rent: this.rent,
                 },
-                // signers: [authorityClient.provider.wallet.payer],
             };
-            // const amount = new BN(10*10**9);
             let tx = new web3_js_1.Transaction();
             tx.add(yield buyerClient.instruction.deposit(this.buyerEscrowBump, amount, acc));
             return tx;
@@ -205,14 +207,13 @@ class KanonAuctionProgramAdapter {
     *
     * Withdraws from an escrow account
     *  */
-    withdraw(amount) {
+    withdraw(amount, transferAuthority) {
         return __awaiter(this, void 0, void 0, function* () {
-            const buyerClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            const buyerClient = this.auctionHouseProgram;
             let acc = {
                 accounts: {
                     wallet: this._provider.wallet.publicKey,
                     receiptAccount: this._provider.wallet.publicKey,
-                    transferAuthority: this._provider.wallet.publicKey,
                     escrowPaymentAccount: this.buyerEscrow,
                     treasuryMint: this.treasuryMint,
                     authority: this.authority,
@@ -222,7 +223,6 @@ class KanonAuctionProgramAdapter {
                     systemProgram: this.systemProgram,
                     rent: this.rent,
                 },
-                // signers: [authorityClient.provider.wallet.payer],
             };
             // const amount = new BN(10*10**9);
             let tx = new web3_js_1.Transaction();
@@ -235,22 +235,16 @@ class KanonAuctionProgramAdapter {
     */
     postOffer(buyerPrice, tokenSize, mintKey) {
         return __awaiter(this, void 0, void 0, function* () {
-            let buyerClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            let buyerClient = this.auctionHouseProgram;
             const zero = new spl_token_1.u64(0);
             const mint = new anchor.web3.PublicKey(mintKey);
             const buyPriceAdjusted = buyerPrice;
             const tokenSizeAdjusted = tokenSize;
-            const [escrowPaymentAccount, escrowBump] = yield (0, util_1.getAuctionHouseBuyerEscrow)(this.auctionHouse, this._provider.wallet.publicKey);
             const results = yield buyerClient.provider.connection.getTokenLargestAccounts(mintKey);
             const tokenAccountKey = results.value[0].address;
-            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, 
-            //@ts-ignore
-            this.treasuryMint, mint, tokenSizeAdjusted, buyPriceAdjusted);
-            //@ts-ignore
-            const isNative = this.treasuryMint.equals(WRAPPED_SOL_MINT);
-            const ata = (yield (0, util_1.getAtaForMint)(
-            //@ts-ignore
-            this.treasuryMint, this._provider.wallet.publicKey))[0];
+            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, this.treasuryMint, mint, tokenSizeAdjusted, buyPriceAdjusted);
+            const isNative = this.treasuryMint.equals(constant_1.WRAPPED_SOL_MINT);
+            const ata = (yield (0, util_1.getAtaForMint)(this.treasuryMint, this._provider.wallet.publicKey))[0];
             let tx = new web3_js_1.Transaction();
             tx.add(yield buyerClient.instruction.buy(tradeBump, this.buyerEscrowBump, buyPriceAdjusted, tokenSizeAdjusted, {
                 accounts: {
@@ -262,12 +256,9 @@ class KanonAuctionProgramAdapter {
                     metadata: yield (0, util_1.getMetadata)(mintKey),
                     tokenAccount: tokenAccountKey,
                     escrowPaymentAccount: this.buyerEscrow,
-                    //@ts-ignore
                     treasuryMint: this.treasuryMint,
-                    //@ts-ignore
                     authority: this.authority,
                     auctionHouse: this.auctionHouse,
-                    //@ts-ignore
                     auctionHouseFeeAccount: this.auctionHouseFeeAccount,
                     buyerTradeState: tradeState,
                     tokenProgram: spl_token_1.TOKEN_PROGRAM_ID,
@@ -283,24 +274,20 @@ class KanonAuctionProgramAdapter {
     */
     cancelOffer(buyerPrice, tokenSize, mint) {
         return __awaiter(this, void 0, void 0, function* () {
-            let buyerClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            let buyerClient = this.auctionHouseProgram;
             const mintKey = new anchor.web3.PublicKey(mint);
             const buyPriceAdjusted = buyerPrice;
             const tokenSizeAdjusted = tokenSize;
             const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, this._provider.wallet.publicKey))[0];
-            const tradeState = (yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, 
-            //@ts-ignore
-            this.treasuryMint, mintKey, tokenSizeAdjusted, buyPriceAdjusted))[0];
+            const tradeState = (yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, buyPriceAdjusted))[0];
             let tx = new web3_js_1.Transaction();
             tx.add(yield buyerClient.instruction.cancel(buyPriceAdjusted, tokenSizeAdjusted, {
                 accounts: {
                     wallet: this._provider.wallet.publicKey.toBuffer(),
                     tokenAccount: tokenAccountKey,
                     tokenMint: mintKey,
-                    //@ts-ignore
                     authority: this.authority,
                     auctionHouse: this.auctionHouse,
-                    //@ts-ignore
                     auctionHouseFeeAccount: this.auctionHouseFeeAccount,
                     tradeState,
                     tokenProgram: spl_token_1.TOKEN_PROGRAM_ID,
@@ -315,25 +302,19 @@ class KanonAuctionProgramAdapter {
      */
     sellNft(mint, buyPriceAdjusted, tokenSizeAdjusted) {
         return __awaiter(this, void 0, void 0, function* () {
-            let sellerClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            let sellerClient = this.auctionHouseProgram;
             const mintKey = new anchor.web3.PublicKey(mint);
             const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, this._provider.wallet.publicKey))[0];
-            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, 
-            //@ts-ignore
-            this.treasuryMint, mintKey, tokenSizeAdjusted, buyPriceAdjusted);
-            const [freeTradeState, freeTradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, 
-            //@ts-ignore
-            this.treasuryMint, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
+            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, buyPriceAdjusted);
+            const [freeTradeState, freeTradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
             let tx = new web3_js_1.Transaction();
             tx.add(yield sellerClient.instruction.sell(tradeBump, freeTradeBump, this.programAsSignerBump, buyPriceAdjusted, tokenSizeAdjusted, {
                 accounts: {
                     wallet: this._provider.wallet.publicKey,
                     metadata: yield (0, util_1.getMetadata)(mintKey),
                     tokenAccount: tokenAccountKey,
-                    //@ts-ignore
                     authority: this.authority,
                     auctionHouse: this.auctionHouse,
-                    //@ts-ignore
                     auctionHouseFeeAccount: this.auctionHouseFeeAccount,
                     sellerTradeState: tradeState,
                     freeSellerTradeState: freeTradeState,
@@ -352,22 +333,15 @@ class KanonAuctionProgramAdapter {
      */
     executeSales(mint, buyerWallet, sellerWallet, buyPriceAdjusted, tokenSizeAdjusted) {
         return __awaiter(this, void 0, void 0, function* () {
-            let sellerClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            let sellerClient = this.auctionHouseProgram;
             const mintKey = new anchor.web3.PublicKey(mint);
             const buyerWalletKey = new anchor.web3.PublicKey(buyerWallet);
             const sellerWalletKey = new anchor.web3.PublicKey(sellerWallet);
-            //@ts-ignore
-            const isNative = this.treasuryMint.equals(WRAPPED_SOL_MINT);
+            const isNative = this.treasuryMint.equals(constant_1.WRAPPED_SOL_MINT);
             const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, sellerWalletKey))[0];
-            const buyerTradeState = (yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, buyerWalletKey, tokenAccountKey, 
-            //@ts-ignore
-            this.treasuryMint, mintKey, tokenSizeAdjusted, buyPriceAdjusted))[0];
-            const sellerTradeState = (yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, sellerWalletKey, tokenAccountKey, 
-            //@ts-ignore
-            this.treasuryMint, mintKey, tokenSizeAdjusted, buyPriceAdjusted))[0];
-            const [freeTradeState, freeTradeStateBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, sellerWalletKey, tokenAccountKey, 
-            //@ts-ignore
-            this.treasuryMint, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
+            const buyerTradeState = (yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, buyerWalletKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, buyPriceAdjusted))[0];
+            const sellerTradeState = (yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, sellerWalletKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, buyPriceAdjusted))[0];
+            const [freeTradeState, freeTradeStateBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, sellerWalletKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
             const metadata = yield (0, util_1.getMetadata)(mintKey);
             const metadataObj = yield sellerClient.provider.connection.getAccountInfo(metadata);
             const metadataDecoded = (0, schema_1.decodeMetadata)(Buffer.from(metadataObj.data));
@@ -380,15 +354,12 @@ class KanonAuctionProgramAdapter {
                 });
                 if (!isNative) {
                     remainingAccounts.push({
-                        pubkey: (yield (0, util_1.getAtaForMint)(
-                        //@ts-ignore
-                        this.treasuryMint, remainingAccounts[remainingAccounts.length - 1].pubkey))[0],
+                        pubkey: (yield (0, util_1.getAtaForMint)(this.treasuryMint, remainingAccounts[remainingAccounts.length - 1].pubkey))[0],
                         isWritable: true,
                         isSigner: false,
                     });
                 }
             }
-            //@ts-ignore
             const tMint = this.treasuryMint;
             let tx = new web3_js_1.Transaction();
             tx.add(yield sellerClient.instruction.executeSale(this.buyerEscrowBump, freeTradeStateBump, this.programAsSignerBump, buyPriceAdjusted, tokenSizeAdjusted, {
@@ -404,12 +375,9 @@ class KanonAuctionProgramAdapter {
                         ? sellerWalletKey
                         : (yield (0, util_1.getAtaForMint)(tMint, sellerWalletKey))[0],
                     buyerReceiptTokenAccount: (yield (0, util_1.getAtaForMint)(mintKey, buyerWalletKey))[0],
-                    //@ts-ignore
                     authority: this.authority,
                     auctionHouse: this.auctionHouse,
-                    //@ts-ignore
                     auctionHouseFeeAccount: this.auctionHouseFeeAccount,
-                    //@ts-ignore
                     auctionHouseTreasury: this.auctionHouseTreasury,
                     sellerTradeState,
                     buyerTradeState,
@@ -431,7 +399,7 @@ class KanonAuctionProgramAdapter {
      */
     withdrawFromFee(amount) {
         return __awaiter(this, void 0, void 0, function* () {
-            let authorityClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            let authorityClient = this.auctionHouseProgram;
             let acc = {
                 authority: this.authority,
                 feeWithdrawalDestination: this.feeWithdrawalDestination,
@@ -439,9 +407,7 @@ class KanonAuctionProgramAdapter {
                 auctionHouse: this.auctionHouse,
                 systemProgram: this.systemProgram,
             };
-            const amountAdjusted = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(amount, 
-            //@ts-ignore
-            this.treasuryMint, this._provider.wallet.publicKey, authorityClient));
+            const amountAdjusted = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(amount, this.treasuryMint, this._provider.wallet.publicKey, authorityClient));
             let tx = new web3_js_1.Transaction();
             tx.add(yield authorityClient.instruction.withdrawFromFee(amountAdjusted, {
                 accounts: acc,
@@ -454,7 +420,7 @@ class KanonAuctionProgramAdapter {
      */
     withFromTreasury(amount) {
         return __awaiter(this, void 0, void 0, function* () {
-            let authorityClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            let authorityClient = this.auctionHouseProgram;
             let acc = {
                 treasuryMint: this.treasuryMint,
                 authority: this.authority,
@@ -464,11 +430,9 @@ class KanonAuctionProgramAdapter {
                 tokenProgram: this.tokenProgram,
                 systemProgram: this.systemProgram,
             };
-            const amountAdjusted = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(amount, 
-            //@ts-ignore
-            auctionHouseObj.treasuryMint, this._provider.wallet.publicKey, authorityClient));
+            const amountAdjusted = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(amount, this.treasuryMint, this._provider.wallet.publicKey, authorityClient));
             let tx = new web3_js_1.Transaction();
-            tx.add(yield authorityClient.instruction.withdrawFromTreasury(new spl_token_1.u64(1), {
+            tx.add(yield authorityClient.instruction.withdrawFromTreasury(amountAdjusted, {
                 accounts: acc
             }));
             let txSig = yield authorityClient.provider.send(tx);
@@ -476,11 +440,23 @@ class KanonAuctionProgramAdapter {
         });
     }
     /**Update auction house */
-    updateAuctionHouse(requiresSignOff) {
+    updateAuctionHouse(requiresSignOff, treasuryWithdrawalDestination, feeWithdrawalDestination, sfbp, canChangeSalePrice) {
         return __awaiter(this, void 0, void 0, function* () {
-            let authorityClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
-            const sellerFeeBasisPoints = 2;
-            const canChangeSalePrice = true;
+            let authorityClient = this.auctionHouseProgram;
+            const sellerFeeBasisPoints = parseInt(sfbp);
+            let twdKey, fwdKey;
+            if (!treasuryWithdrawalDestination) {
+                twdKey = this._provider.wallet.publicKey;
+            }
+            else {
+                twdKey = new anchor.web3.PublicKey(treasuryWithdrawalDestination);
+            }
+            if (!feeWithdrawalDestination) {
+                fwdKey = this._provider.wallet.publicKey;
+            }
+            else {
+                fwdKey = new anchor.web3.PublicKey(feeWithdrawalDestination);
+            }
             const tx = new web3_js_1.Transaction();
             tx.add(authorityClient.instruction.updateAuctionHouse(sellerFeeBasisPoints, requiresSignOff, canChangeSalePrice, {
                 accounts: {
@@ -488,9 +464,9 @@ class KanonAuctionProgramAdapter {
                     payer: this.authority,
                     authority: this.authority,
                     newAuthority: this.authority,
-                    feeWithdrawalDestination: this.feeWithdrawalDestination,
+                    feeWithdrawalDestination: fwdKey,
                     treasuryWithdrawalDestination: this.treasuryWithdrawalDestination,
-                    treasuryWithdrawalDestinationOwner: this.treasuryWithdrawalDestinationOwner,
+                    treasuryWithdrawalDestinationOwner: twdKey,
                     auctionHouse: this.auctionHouse,
                     tokenProgram: this.tokenProgram,
                     systemProgram: this.systemProgram,
@@ -507,8 +483,8 @@ class KanonAuctionProgramAdapter {
      */
     getAuctionHouseDetails() {
         return __awaiter(this, void 0, void 0, function* () {
-            let authorityClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
-            const auctionHouseObj = yield authorityClient.account.auctionHouse.fetch(this.auctionHouse);
+            let authorityClient = this.auctionHouseProgram;
+            const auctionHouseObj = yield authorityClient.account.auctionHouse.fetchNullable(this.auctionHouse);
             return auctionHouseObj;
         });
     }
@@ -517,11 +493,9 @@ class KanonAuctionProgramAdapter {
      */
     getFeeAccBalance() {
         return __awaiter(this, void 0, void 0, function* () {
-            let authorityClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            let authorityClient = this.auctionHouseProgram;
             const auctionHouseObj = yield authorityClient.account.auctionHouse.fetch(this.auctionHouse);
-            const feeAmount = yield authorityClient.provider.connection.getBalance(
-            //@ts-ignore
-            auctionHouseObj.auctionHouseFeeAccount);
+            const feeAmount = yield authorityClient.provider.connection.getBalance(auctionHouseObj.auctionHouseFeeAccount);
             return feeAmount;
         });
     }
@@ -530,13 +504,9 @@ class KanonAuctionProgramAdapter {
      */
     getTreasuryAccBalance() {
         return __awaiter(this, void 0, void 0, function* () {
-            let authorityClient = new anchor_1.Program(kanon_program_devnet_1.IDL, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            let authorityClient = this.auctionHouseProgram;
             const auctionHouseObj = yield authorityClient.account.auctionHouse.fetch(this.auctionHouse);
-            const treasuryAmount = yield (0, util_1.getTokenAmount)(authorityClient, 
-            //@ts-ignore
-            auctionHouseObj.auctionHouseTreasury, 
-            //@ts-ignore
-            auctionHouseObj.treasuryMint);
+            const treasuryAmount = yield (0, util_1.getTokenAmount)(authorityClient, auctionHouseObj.auctionHouseTreasury, auctionHouseObj.treasuryMint);
             return treasuryAmount;
         });
     }

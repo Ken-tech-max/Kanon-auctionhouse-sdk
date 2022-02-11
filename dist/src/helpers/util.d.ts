@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { BN, web3, Program } from "@project-serum/anchor";
+import { Provider, BN, web3, Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { Metadata } from "./schema";
 export declare const getUnixTimestamp: (date?: string | number | Date | undefined) => number;
@@ -15,3 +15,4 @@ export declare const getAuctionHouseProgramAsSigner: () => Promise<[
 export declare const decodeMetadata: (buffer: Buffer) => Metadata;
 export declare const getPriceWithMantissa: (price: number, mint: web3.PublicKey, walletKeyPair: any, anchorProgram: Program) => Promise<number>;
 export declare function getTokenAmount(anchorProgram: Program, account: web3.PublicKey, mint: web3.PublicKey): Promise<number>;
+export declare function loadAuctionHouseProgram(_provider: Provider): Promise<Program<any>>;

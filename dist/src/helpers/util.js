@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTokenAmount = exports.getPriceWithMantissa = exports.decodeMetadata = exports.getAuctionHouseProgramAsSigner = exports.getAuctionHouseBuyerEscrow = exports.getAuctionHouseTradeState = exports.getMetadata = exports.getAtaForMint = exports.hexToBytes = exports.getUnixTimestamp = void 0;
+exports.loadAuctionHouseProgram = exports.getTokenAmount = exports.getPriceWithMantissa = exports.decodeMetadata = exports.getAuctionHouseProgramAsSigner = exports.getAuctionHouseBuyerEscrow = exports.getAuctionHouseTradeState = exports.getMetadata = exports.getAtaForMint = exports.hexToBytes = exports.getUnixTimestamp = void 0;
 const anchor_1 = require("@project-serum/anchor");
 const spl_token_1 = require("@solana/spl-token");
 const constant_1 = require("../helpers/constant");
@@ -111,4 +111,12 @@ function getTokenAmount(anchorProgram, account, mint) {
     });
 }
 exports.getTokenAmount = getTokenAmount;
+function loadAuctionHouseProgram(_provider) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const provider = _provider;
+        const idl = yield anchor_1.Program.fetchIdl(constant_1.AUCTION_HOUSE_PROGRAM_ID, provider);
+        return new anchor_1.Program(idl, constant_1.AUCTION_HOUSE_PROGRAM_ID, provider);
+    });
+}
+exports.loadAuctionHouseProgram = loadAuctionHouseProgram;
 //# sourceMappingURL=util.js.map

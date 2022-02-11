@@ -43,6 +43,7 @@ export default class KanonAuctionProgramAdapter {
     protected auctionHouseFeeAccountBump: number;
     protected bump: number;
     protected buyerWallet: any;
+    protected auctionHouseProgram: any;
     protected buyerTokenAccount: any;
     protected buyerEscrow: any;
     protected buyerEscrowBump: number;
@@ -51,6 +52,7 @@ export default class KanonAuctionProgramAdapter {
     protected _program_id: PublicKey;
     constructor(provider: Provider, config: KanonProgramConfig);
     getProgram(): Program;
+    getAuctionHouseProgram(): Program<AuctionHouse>;
     getProvider(): Provider;
     /**
      * update accounts for connected wallet
@@ -59,17 +61,17 @@ export default class KanonAuctionProgramAdapter {
     /**
        * create auction house
       */
-    createAuctionHouse(requiresSignOff: boolean, treasuryWithdrawalDestination: PublicKey, feeWithdrawalDestination: PublicKey): Promise<anchor.web3.Transaction>;
+    createAuctionHouse(requiresSignOff: boolean, treasuryWithdrawalDestination: PublicKey, feeWithdrawalDestination: PublicKey, sfbp: any, canChangeSalePrice: boolean): Promise<anchor.web3.Transaction>;
     /**
      *
      * deposit into escrow acount
      *  */
-    deposit(amount: BN): Promise<anchor.web3.Transaction>;
+    deposit(amount: BN, transferAuthority: PublicKey): Promise<anchor.web3.Transaction>;
     /**
     *
     * Withdraws from an escrow account
     *  */
-    withdraw(amount: BN): Promise<anchor.web3.Transaction>;
+    withdraw(amount: BN, transferAuthority: PublicKey): Promise<anchor.web3.Transaction>;
     postOffer(buyerPrice: u64, tokenSize: u64, mintKey: PublicKey): Promise<anchor.web3.Transaction>;
     cancelOffer(buyerPrice: u64, tokenSize: u64, mint: PublicKey): Promise<anchor.web3.Transaction>;
     /**
@@ -90,60 +92,15 @@ export default class KanonAuctionProgramAdapter {
      */
     withFromTreasury(amount: any): Promise<any>;
     /**Update auction house */
-    updateAuctionHouse(requiresSignOff: boolean): Promise<string>;
+    updateAuctionHouse(requiresSignOff: boolean, treasuryWithdrawalDestination: PublicKey, feeWithdrawalDestination: PublicKey, sfbp: any, canChangeSalePrice: boolean): Promise<any>;
     /**
      * get auction house accounts
      */
-    getAuctionHouseDetails(): Promise<import("@project-serum/anchor/dist/cjs/program/namespace/types").TypeDef<{
-        name: "auctionHouse";
-        type: {
-            kind: "struct";
-            fields: [{
-                name: "auctionHouseFeeAccount";
-                type: "publicKey";
-            }, {
-                name: "auctionHouseTreasury";
-                type: "publicKey";
-            }, {
-                name: "treasuryWithdrawalDestination";
-                type: "publicKey";
-            }, {
-                name: "feeWithdrawalDestination";
-                type: "publicKey";
-            }, {
-                name: "treasuryMint";
-                type: "publicKey";
-            }, {
-                name: "authority";
-                type: "publicKey";
-            }, {
-                name: "creator";
-                type: "publicKey";
-            }, {
-                name: "bump";
-                type: "u8";
-            }, {
-                name: "treasuryBump";
-                type: "u8";
-            }, {
-                name: "feePayerBump";
-                type: "u8";
-            }, {
-                name: "sellerFeeBasisPoints";
-                type: "u16";
-            }, {
-                name: "requiresSignOff";
-                type: "bool";
-            }, {
-                name: "canChangeSalePrice";
-                type: "bool";
-            }];
-        };
-    }, anchor.IdlTypes<AuctionHouse>>>;
+    getAuctionHouseDetails(): Promise<any>;
     /**
      * get fee account balance
      */
-    getFeeAccBalance(): Promise<number>;
+    getFeeAccBalance(): Promise<any>;
     /**
      * get fee account balance
      */
