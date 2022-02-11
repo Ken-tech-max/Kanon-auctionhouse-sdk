@@ -127,20 +127,8 @@ export const decodeMetadata = (buffer: Buffer): Metadata => {
 
 export const getPriceWithMantissa = async (
   price: number,
-  mint: web3.PublicKey,
-  walletKeyPair: any,
-  anchorProgram: Program,
 ): Promise<number> => {
-  const token = new Token(
-    anchorProgram.provider.connection,
-    new web3.PublicKey(mint),
-    TOKEN_PROGRAM_ID,
-    walletKeyPair,
-  );
-  const mintInfo = await token.getMintInfo();
-
-  const mantissa = 10 ** mintInfo.decimals;
-
+  const mantissa = 10 ** 9;
   return Math.ceil(price * mantissa);
 }
 

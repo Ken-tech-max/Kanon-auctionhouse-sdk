@@ -457,14 +457,26 @@ export default class KanonAuctionProgramAdapter {
       await getAtaForMint(mintKey, this._provider.wallet.publicKey)
     )[0];
 
+    const tokenSize = new BN(
+      await getPriceWithMantissa(
+        tokenSizeAdjusted,
+      ),
+    );
+
+    const buyPrice = new BN(
+      await getPriceWithMantissa(
+        buyPriceAdjusted,
+      ),
+    );
+
     const [tradeState, tradeBump] = await getAuctionHouseTradeState(
       this.auctionHouse,
       this._provider.wallet.publicKey,
       tokenAccountKey,
       this.treasuryMint,
       mintKey,
-      tokenSizeAdjusted,
-      buyPriceAdjusted,
+      tokenSize,
+      buyPrice,
     );
 
     const [freeTradeState, freeTradeBump] = await getAuctionHouseTradeState(

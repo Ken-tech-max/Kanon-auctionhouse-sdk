@@ -86,10 +86,8 @@ const decodeMetadata = (buffer) => {
     return metadata;
 };
 exports.decodeMetadata = decodeMetadata;
-const getPriceWithMantissa = (price, mint, walletKeyPair, anchorProgram) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = new spl_token_1.Token(anchorProgram.provider.connection, new anchor_1.web3.PublicKey(mint), spl_token_1.TOKEN_PROGRAM_ID, walletKeyPair);
-    const mintInfo = yield token.getMintInfo();
-    const mantissa = Math.pow(10, mintInfo.decimals);
+const getPriceWithMantissa = (price) => __awaiter(void 0, void 0, void 0, function* () {
+    const mantissa = Math.pow(10, 9);
     return Math.ceil(price * mantissa);
 });
 exports.getPriceWithMantissa = getPriceWithMantissa;
