@@ -56,6 +56,7 @@ export default class KanonAuctionProgramAdapter {
   protected FEE_PAYER = Buffer.from("fee_payer");
   protected TREASURY = Buffer.from("treasury");
   protected SIGNER = Buffer.from("signer");
+  
 
   // Constant accounts.
   protected authority: any;
@@ -106,7 +107,7 @@ export default class KanonAuctionProgramAdapter {
 
     this._provider = provider;
     this._config = config;
-    this.authority = config.authority;  //Important this must be admin's public key
+    this.authority = new PublicKey(config.authority);  //Important this must be admin's public key
 
   }
 

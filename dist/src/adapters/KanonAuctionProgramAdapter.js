@@ -76,7 +76,7 @@ class KanonAuctionProgramAdapter {
             new anchor_1.Program(kanon_program_mainnet_json_1.default, this._program_id, provider);
         this._provider = provider;
         this._config = config;
-        this.authority = config.authority; //Important this must be admin's public key
+        this.authority = new web3_js_1.PublicKey(config.authority); //Important this must be admin's public key
     }
     getProgram() {
         return this._program;
