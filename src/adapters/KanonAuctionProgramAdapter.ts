@@ -448,7 +448,7 @@ export default class KanonAuctionProgramAdapter {
   /**
    * Sell Nft
    */
-  public async sellNft(mint: PublicKey, buyPriceAdjusted: BN, tokenSizeAdjusted: BN) {
+  public async sellNft(mint: PublicKey, buyPriceAdjusted: any, tokenSizeAdjusted: any) {
     let sellerClient = this.auctionHouseProgram;
     console.log(sellerClient)
     const mintKey = new anchor.web3.PublicKey(mint);
