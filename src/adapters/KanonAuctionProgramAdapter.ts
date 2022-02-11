@@ -769,6 +769,7 @@ export default class KanonAuctionProgramAdapter {
    */
   public async getAuctionHouseDetails() {
     let authorityClient = this._program;
+    console.log("this.auctionHouse",this.auctionHouse);
     const auctionHouseObj :any= await authorityClient.account.auctionHouse.fetchNullable(
       this.auctionHouse,
     );
