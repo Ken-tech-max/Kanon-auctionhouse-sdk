@@ -300,9 +300,10 @@ class KanonAuctionProgramAdapter {
     /**
      * Sell Nft
      */
-    sellNft(mint, buyPriceAdjusted, tokenSizeAdjusted) {
+    sellNft(mint, buyPriceAdjusted, tokenSizeAdjusted, auctionHouse) {
         return __awaiter(this, void 0, void 0, function* () {
             let sellerClient = this.auctionHouseProgram;
+            this.auctionHouse = auctionHouse;
             const mintKey = new anchor.web3.PublicKey(mint);
             const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, this._provider.wallet.publicKey))[0];
             const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, buyPriceAdjusted);

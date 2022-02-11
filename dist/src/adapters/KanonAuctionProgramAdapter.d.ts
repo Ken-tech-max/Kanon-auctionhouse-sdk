@@ -77,7 +77,7 @@ export default class KanonAuctionProgramAdapter {
     /**
      * Sell Nft
      */
-    sellNft(mint: PublicKey, buyPriceAdjusted: u64, tokenSizeAdjusted: u64): Promise<anchor.web3.Transaction>;
+    sellNft(mint: PublicKey, buyPriceAdjusted: u64, tokenSizeAdjusted: u64, auctionHouse: PublicKey): Promise<anchor.web3.Transaction>;
     /**
      * Execute Sale
      *

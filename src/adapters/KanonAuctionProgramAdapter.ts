@@ -127,8 +127,6 @@ export default class KanonAuctionProgramAdapter {
    * update accounts for connected wallet
    */
   public async refreshByWallet() {
-    
-
     const [_auctionHouse, _bump] = await PublicKey.findProgramAddress(
       [
         this.PREFIX,
@@ -441,9 +439,9 @@ export default class KanonAuctionProgramAdapter {
   /**
    * Sell Nft
    */
-  public async sellNft(mint: PublicKey, buyPriceAdjusted: u64, tokenSizeAdjusted: u64) {
+  public async sellNft(mint: PublicKey, buyPriceAdjusted: u64, tokenSizeAdjusted: u64, auctionHouse:PublicKey) {
     let sellerClient = this.auctionHouseProgram;
-
+    this.auctionHouse = auctionHouse;
     const mintKey = new anchor.web3.PublicKey(mint);
 
     const tokenAccountKey = (
@@ -454,7 +452,6 @@ export default class KanonAuctionProgramAdapter {
       this.auctionHouse,
       this._provider.wallet.publicKey,
       tokenAccountKey,
-
       this.treasuryMint,
       mintKey,
       tokenSizeAdjusted,
@@ -465,7 +462,6 @@ export default class KanonAuctionProgramAdapter {
       this.auctionHouse,
       this._provider.wallet.publicKey,
       tokenAccountKey,
-
       this.treasuryMint,
       mintKey,
       tokenSizeAdjusted,
