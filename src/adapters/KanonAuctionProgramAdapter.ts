@@ -310,7 +310,7 @@ export default class KanonAuctionProgramAdapter {
   /*
   * Posts an offer (BUY)
   */
-  public async postOffer(buyerPrice: u64, tokenSize: u64, mintKey: PublicKey) {
+  public async postOffer(buyerPrice: BN, tokenSize: BN, mintKey: PublicKey) {
     let buyerClient = this.auctionHouseProgram;
     const zero = new u64(0);
 
@@ -381,7 +381,7 @@ export default class KanonAuctionProgramAdapter {
   /*
   Cancels an offer
   */
-  public async cancelOffer(buyerPrice: u64, tokenSize: u64, mint: PublicKey) {
+  public async cancelOffer(buyerPrice: BN, tokenSize: BN, mint: PublicKey) {
     let buyerClient = this.auctionHouseProgram;
 
     const mintKey = new anchor.web3.PublicKey(mint);
@@ -439,7 +439,7 @@ export default class KanonAuctionProgramAdapter {
   /**
    * Sell Nft
    */
-  public async sellNft(mint: PublicKey, buyPriceAdjusted: u64, tokenSizeAdjusted: u64, auctionHouse:PublicKey) {
+  public async sellNft(mint: PublicKey, buyPriceAdjusted: BN, tokenSizeAdjusted: BN, auctionHouse:PublicKey) {
     let sellerClient = this.auctionHouseProgram;
     this.auctionHouse = auctionHouse;
     const mintKey = new anchor.web3.PublicKey(mint);
@@ -505,7 +505,7 @@ export default class KanonAuctionProgramAdapter {
    * 
    */
   public async executeSales(mint: PublicKey, buyerWallet: PublicKey,
-    sellerWallet: PublicKey, buyPriceAdjusted: u64, tokenSizeAdjusted: u64) {
+    sellerWallet: PublicKey, buyPriceAdjusted: BN, tokenSizeAdjusted: BN) {
     let sellerClient = this.auctionHouseProgram
 
     const mintKey = new anchor.web3.PublicKey(mint);

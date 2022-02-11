@@ -2,7 +2,6 @@
 /// <reference types="bn.js" />
 import * as anchor from '@project-serum/anchor';
 import { PublicKey } from '@solana/web3.js';
-import { u64 } from '@solana/spl-token';
 import * as metaplex from '@metaplex/js';
 import { AuctionHouse } from '../types/kanon_program_devnet';
 import { KanonProgramConfig } from '..';
@@ -72,17 +71,17 @@ export default class KanonAuctionProgramAdapter {
     * Withdraws from an escrow account
     *  */
     withdraw(amount: BN, transferAuthority: PublicKey): Promise<anchor.web3.Transaction>;
-    postOffer(buyerPrice: u64, tokenSize: u64, mintKey: PublicKey): Promise<anchor.web3.Transaction>;
-    cancelOffer(buyerPrice: u64, tokenSize: u64, mint: PublicKey): Promise<anchor.web3.Transaction>;
+    postOffer(buyerPrice: BN, tokenSize: BN, mintKey: PublicKey): Promise<anchor.web3.Transaction>;
+    cancelOffer(buyerPrice: BN, tokenSize: BN, mint: PublicKey): Promise<anchor.web3.Transaction>;
     /**
      * Sell Nft
      */
-    sellNft(mint: PublicKey, buyPriceAdjusted: u64, tokenSizeAdjusted: u64, auctionHouse: PublicKey): Promise<anchor.web3.Transaction>;
+    sellNft(mint: PublicKey, buyPriceAdjusted: BN, tokenSizeAdjusted: BN, auctionHouse: PublicKey): Promise<anchor.web3.Transaction>;
     /**
      * Execute Sale
      *
      */
-    executeSales(mint: PublicKey, buyerWallet: PublicKey, sellerWallet: PublicKey, buyPriceAdjusted: u64, tokenSizeAdjusted: u64): Promise<anchor.web3.Transaction>;
+    executeSales(mint: PublicKey, buyerWallet: PublicKey, sellerWallet: PublicKey, buyPriceAdjusted: BN, tokenSizeAdjusted: BN): Promise<anchor.web3.Transaction>;
     /**
      * Withdraws from the fee account
      */
