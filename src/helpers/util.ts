@@ -85,8 +85,8 @@ export const getAuctionHouseTradeState = async (
       tokenAccount.toBuffer(),
       treasuryMint.toBuffer(),
       tokenMint.toBuffer(),
-      buyPrice.toBuffer('le', 8),
-      tokenSize.toBuffer('le', 8),
+      buyPrice.toBuffer(),
+      tokenSize.toBuffer(),
     ],
     AUCTION_HOUSE_PROGRAM_ID,
   );

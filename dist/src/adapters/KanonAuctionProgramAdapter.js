@@ -326,6 +326,7 @@ class KanonAuctionProgramAdapter {
             console.log(sellerClient);
             const mintKey = new anchor.web3.PublicKey(mint);
             const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, this._provider.wallet.publicKey))[0];
+            console.log(buyPriceAdjusted, tokenSizeAdjusted);
             // const tokenSize = new BN(
             //   await getPriceWithMantissa(
             //     tokenSizeAdjusted,

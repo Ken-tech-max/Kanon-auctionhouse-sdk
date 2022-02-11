@@ -457,6 +457,7 @@ export default class KanonAuctionProgramAdapter {
       await getAtaForMint(mintKey, this._provider.wallet.publicKey)
     )[0];
 
+    console.log(buyPriceAdjusted,tokenSizeAdjusted)
     // const tokenSize = new BN(
     //   await getPriceWithMantissa(
     //     tokenSizeAdjusted,

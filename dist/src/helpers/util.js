@@ -64,8 +64,8 @@ const getAuctionHouseTradeState = (auctionHouse, wallet, tokenAccount, treasuryM
         tokenAccount.toBuffer(),
         treasuryMint.toBuffer(),
         tokenMint.toBuffer(),
-        buyPrice.toBuffer('le', 8),
-        tokenSize.toBuffer('le', 8),
+        buyPrice.toBuffer(),
+        tokenSize.toBuffer(),
     ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
 });
 exports.getAuctionHouseTradeState = getAuctionHouseTradeState;
