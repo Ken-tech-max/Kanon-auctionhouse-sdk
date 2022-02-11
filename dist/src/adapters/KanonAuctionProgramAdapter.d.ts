@@ -85,7 +85,7 @@ export default class KanonAuctionProgramAdapter {
     /**
      * Withdraws from the fee account
      */
-    withdrawFromFee(amount: BN): Promise<anchor.web3.Transaction>;
+    withdrawFromFee(amount: BN, feeWithdrawalDestination: PublicKey): Promise<anchor.web3.Transaction>;
     /**
      * Withdraws from the treasury account
      */

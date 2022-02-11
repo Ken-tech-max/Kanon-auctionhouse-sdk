@@ -131,6 +131,7 @@ class KanonAuctionProgramAdapter {
                 this.SIGNER,
             ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
             const auctionObj = yield this.getAuctionHouseDetails();
+            console.log(auctionObj);
             // const idl:any = await Program.fetchIdl(AUCTION_HOUSE_PROGRAM_ID, this._provider);
             // const _anchorProgram = await new Program(idl, AUCTION_HOUSE_PROGRAM_ID, this._provider);
             // const _anchorProgram = await loadAuctionHouseProgram(
@@ -147,9 +148,6 @@ class KanonAuctionProgramAdapter {
             this.buyerEscrowBump = _buyerEscrowBump;
             this.programAsSigner = _programAsSigner;
             this.programAsSignerBump = _programAsSignerBump;
-            // this.feeWithdrawalDestination = auctionObj.feeWithdrawalDestination.toBase58();
-            // this.treasuryWithdrawalDestination = auctionObj.treasuryWithdrawalDestination.toBase58();
-            this.feeWithdrawalDestination = this.authority;
             this.treasuryWithdrawalDestination = this.authority;
             this.treasuryWithdrawalDestinationOwner = this.authority;
         });
@@ -429,12 +427,12 @@ class KanonAuctionProgramAdapter {
     /**
      * Withdraws from the fee account
      */
-    withdrawFromFee(amount) {
+    withdrawFromFee(amount, feeWithdrawalDestination) {
         return __awaiter(this, void 0, void 0, function* () {
             let authorityClient = this.auctionHouseProgram;
             let acc = {
                 authority: this.authority,
-                feeWithdrawalDestination: this.feeWithdrawalDestination,
+                feeWithdrawalDestination: feeWithdrawalDestination,
                 auctionHouseFeeAccount: this.auctionHouseFeeAccount,
                 auctionHouse: this.auctionHouse,
                 systemProgram: this.systemProgram,
