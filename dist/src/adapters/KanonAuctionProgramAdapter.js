@@ -325,9 +325,38 @@ class KanonAuctionProgramAdapter {
             const mintKey = new anchor.web3.PublicKey(mint);
             const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, this._provider.wallet.publicKey))[0];
             console.log(buyPriceAdjusted, tokenSizeAdjusted);
-            const tokenSize = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(tokenSizeAdjusted));
-            const buyPrice = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(buyPriceAdjusted));
-            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSize, buyPrice);
+            // const tokenSize = new BN(
+            //   await getPriceWithMantissa(
+            //     tokenSizeAdjusted,
+            //   ),
+            // );
+            // const buyPrice = new BN(
+            //   await getPriceWithMantissa(
+            //     buyPriceAdjusted,
+            //   ),
+            // );
+            // const [tradeState, tradeBump] = await getAuctionHouseTradeState(
+            //   this.auctionHouse,
+            //   this._provider.wallet.publicKey,
+            //   tokenAccountKey,
+            //   this.treasuryMint,
+            //   mintKey,
+            //   tokenSize,
+            //   buyPrice,
+            // );
+            const buyerPrice = new spl_token_1.u64(2 * Math.pow(10, 9));
+            const tokenSize = new spl_token_1.u64(1);
+            const zero = new spl_token_1.u64(0);
+            const [tradeState, tradeBump] = yield web3_js_1.PublicKey.findProgramAddress([
+                this.PREFIX,
+                this._provider.wallet.publicKey.toBuffer(),
+                this.auctionHouse.toBuffer(),
+                tokenAccountKey.toBuffer(),
+                this.treasuryMint.toBuffer(),
+                mintKey.toBuffer(),
+                buyerPrice.toBuffer(),
+                tokenSize.toBuffer(),
+            ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
             const [freeTradeState, freeTradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
             let tx = new web3_js_1.Transaction();
             tx.add(yield sellerClient.instruction.sell(tradeBump, freeTradeBump, this.programAsSignerBump, buyPriceAdjusted, tokenSizeAdjusted, {
