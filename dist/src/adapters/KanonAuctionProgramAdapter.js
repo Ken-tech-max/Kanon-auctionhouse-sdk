@@ -483,7 +483,7 @@ class KanonAuctionProgramAdapter {
      */
     getAuctionHouseDetails() {
         return __awaiter(this, void 0, void 0, function* () {
-            let authorityClient = this.auctionHouseProgram;
+            let authorityClient = this._program;
             const auctionHouseObj = yield authorityClient.account.auctionHouse.fetchNullable(this.auctionHouse);
             return auctionHouseObj;
         });
