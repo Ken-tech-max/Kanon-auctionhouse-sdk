@@ -144,7 +144,7 @@ export default class KanonAuctionProgramAdapter {
         _auctionHouse.toBuffer(),
         this.FEE_PAYER,
       ],
-      AUCTION_HOUSE_PROGRAM_ID,
+      AUCTION_HOUSE_PROGRAM_ID
     );
     const [_auctionHouseTreasury, _auctionHouseTreasuryBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
@@ -191,8 +191,10 @@ export default class KanonAuctionProgramAdapter {
     this.buyerEscrowBump = _buyerEscrowBump;
     this.programAsSigner = _programAsSigner;
     this.programAsSignerBump = _programAsSignerBump;
-    this.feeWithdrawalDestination = auctionObj.feeWithdrawalDestination.toBase58();
-    this.treasuryWithdrawalDestination = auctionObj.treasuryWithdrawalDestination.toBase58();
+    // this.feeWithdrawalDestination = auctionObj.feeWithdrawalDestination.toBase58();
+    // this.treasuryWithdrawalDestination = auctionObj.treasuryWithdrawalDestination.toBase58();
+    this.feeWithdrawalDestination = this.authority;
+    this.treasuryWithdrawalDestination = this.authority;
     this.treasuryWithdrawalDestinationOwner = this.authority;
 
   }
