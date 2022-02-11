@@ -645,7 +645,7 @@ export default class KanonAuctionProgramAdapter {
   /**
    * Withdraws from the fee account
    */
-  public async withdrawFromFee(amount: any) {
+  public async withdrawFromFee(amount: BN) {
     let authorityClient = this.auctionHouseProgram;
 
     let acc = {
@@ -656,15 +656,7 @@ export default class KanonAuctionProgramAdapter {
       systemProgram: this.systemProgram,
     }
 
-    const amountAdjusted = new BN(
-      await getPriceWithMantissa(
-        amount,
-
-        this.treasuryMint,
-        this._provider.wallet.publicKey,
-        authorityClient,
-      ),
-    );
+    const amountAdjusted = amount;
 
     let tx = new Transaction();
     tx.add(await authorityClient.instruction.withdrawFromFee(
@@ -681,7 +673,7 @@ export default class KanonAuctionProgramAdapter {
   /**
    * Withdraws from the treasury account
    */
-  public async withFromTreasury(amount: any) {
+  public async withFromTreasury(amount: BN) {
     let authorityClient = this.auctionHouseProgram
     let acc = {
       treasuryMint: this.treasuryMint,
@@ -693,14 +685,7 @@ export default class KanonAuctionProgramAdapter {
       systemProgram: this.systemProgram,
     }
 
-    const amountAdjusted = new BN(
-      await getPriceWithMantissa(
-        amount,
-        this.treasuryMint,
-        this._provider.wallet.publicKey,
-        authorityClient,
-      ),
-    );
+    const amountAdjusted = amount;
 
     let tx = new Transaction();
     tx.add(await authorityClient.instruction.withdrawFromTreasury(
