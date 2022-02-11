@@ -144,7 +144,7 @@ export default class KanonAuctionProgramAdapter {
         _auctionHouse.toBuffer(),
         this.FEE_PAYER,
       ],
-      this._program_id,
+      AUCTION_HOUSE_PROGRAM_ID,
     );
     const [_auctionHouseTreasury, _auctionHouseTreasuryBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
@@ -173,14 +173,14 @@ export default class KanonAuctionProgramAdapter {
 
     const auctionObj =  await this.getAuctionHouseDetails()
 
-    const idl:any = await Program.fetchIdl(AUCTION_HOUSE_PROGRAM_ID, this._provider);
-    const _anchorProgram = await new Program(idl, AUCTION_HOUSE_PROGRAM_ID, this._provider);
+    // const idl:any = await Program.fetchIdl(AUCTION_HOUSE_PROGRAM_ID, this._provider);
+    // const _anchorProgram = await new Program(idl, AUCTION_HOUSE_PROGRAM_ID, this._provider);
     // const _anchorProgram = await loadAuctionHouseProgram(
     //   this._provider,
     // );
 
 
-    this.auctionHouseProgram = _anchorProgram;
+    this.auctionHouseProgram = this._program;
     this.auctionHouse = _auctionHouse;
     this.bump = _bump;
     this.auctionHouseFeeAccount = _auctionHouseFeeAccount;
@@ -446,6 +446,7 @@ export default class KanonAuctionProgramAdapter {
    */
   public async sellNft(mint: PublicKey, buyPriceAdjusted: BN, tokenSizeAdjusted: BN) {
     let sellerClient = this.auctionHouseProgram;
+    console.log(sellerClient)
     const mintKey = new anchor.web3.PublicKey(mint);
 
     const tokenAccountKey = (
@@ -486,10 +487,8 @@ export default class KanonAuctionProgramAdapter {
           wallet: this._provider.wallet.publicKey,
           metadata: await getMetadata(mintKey),
           tokenAccount: tokenAccountKey,
-
           authority: this.authority,
           auctionHouse: this.auctionHouse,
-
           auctionHouseFeeAccount: this.auctionHouseFeeAccount,
           sellerTradeState: tradeState,
           freeSellerTradeState: freeTradeState,

@@ -114,7 +114,7 @@ class KanonAuctionProgramAdapter {
                 this.PREFIX,
                 _auctionHouse.toBuffer(),
                 this.FEE_PAYER,
-            ], this._program_id);
+            ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
             const [_auctionHouseTreasury, _auctionHouseTreasuryBump] = yield anchor.web3.PublicKey.findProgramAddress([
                 this.PREFIX,
                 _auctionHouse.toBuffer(),
@@ -130,12 +130,12 @@ class KanonAuctionProgramAdapter {
                 this.SIGNER,
             ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
             const auctionObj = yield this.getAuctionHouseDetails();
-            const idl = yield anchor_1.Program.fetchIdl(constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
-            const _anchorProgram = yield new anchor_1.Program(idl, constant_1.AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            // const idl:any = await Program.fetchIdl(AUCTION_HOUSE_PROGRAM_ID, this._provider);
+            // const _anchorProgram = await new Program(idl, AUCTION_HOUSE_PROGRAM_ID, this._provider);
             // const _anchorProgram = await loadAuctionHouseProgram(
             //   this._provider,
             // );
-            this.auctionHouseProgram = _anchorProgram;
+            this.auctionHouseProgram = this._program;
             this.auctionHouse = _auctionHouse;
             this.bump = _bump;
             this.auctionHouseFeeAccount = _auctionHouseFeeAccount;
@@ -320,6 +320,7 @@ class KanonAuctionProgramAdapter {
     sellNft(mint, buyPriceAdjusted, tokenSizeAdjusted) {
         return __awaiter(this, void 0, void 0, function* () {
             let sellerClient = this.auctionHouseProgram;
+            console.log(sellerClient);
             const mintKey = new anchor.web3.PublicKey(mint);
             const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, this._provider.wallet.publicKey))[0];
             const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, buyPriceAdjusted);
