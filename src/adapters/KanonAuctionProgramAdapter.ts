@@ -30,6 +30,7 @@ import {
 } from "../helpers/constant";
 import { getAtaForMint, getAuctionHouseBuyerEscrow, getAuctionHouseProgramAsSigner, getAuctionHouseTradeState, getMetadata, getPriceWithMantissa, getTokenAmount, loadAuctionHouseProgram } from '../helpers/util';
 import { decodeMetadata, Metadata } from '../helpers/schema';
+import { bytes } from '@project-serum/anchor/dist/cjs/utils';
 
 
 export default class KanonAuctionProgramAdapter {
@@ -54,10 +55,11 @@ export default class KanonAuctionProgramAdapter {
   protected nftMintClient: any; // Represents the NFT to be traded.
 
   // Seeds constants.
-  protected PREFIX = Buffer.from("auction_house");
-  protected FEE_PAYER = Buffer.from("fee_payer");
-  protected TREASURY = Buffer.from("treasury");
-  protected SIGNER = Buffer.from("signer");
+         
+  protected PREFIX = Buffer.from(bytes.utf8.encode("auction_house"));
+  protected FEE_PAYER = Buffer.from(bytes.utf8.encode("fee_payer"));
+  protected TREASURY = Buffer.from(bytes.utf8.encode("treasury"));
+  protected SIGNER = Buffer.from(bytes.utf8.encode("signer"));
   
 
   // Constant accounts.

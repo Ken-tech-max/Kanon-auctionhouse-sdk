@@ -41,6 +41,7 @@ const anchor_1 = require("@project-serum/anchor");
 const constant_1 = require("../helpers/constant");
 const util_1 = require("../helpers/util");
 const schema_1 = require("../helpers/schema");
+const utils_1 = require("@project-serum/anchor/dist/cjs/utils");
 class KanonAuctionProgramAdapter {
     constructor(provider, config) {
         this.MetadataDataData = metaplex.programs.metadata.MetadataDataData;
@@ -52,10 +53,10 @@ class KanonAuctionProgramAdapter {
         // The program uses this when one wants to pay with native SOL vs an SPL token.
         this.NATIVE_SOL_MINT = constant_1.NATIVE_SOL_MINT;
         // Seeds constants.
-        this.PREFIX = Buffer.from("auction_house");
-        this.FEE_PAYER = Buffer.from("fee_payer");
-        this.TREASURY = Buffer.from("treasury");
-        this.SIGNER = Buffer.from("signer");
+        this.PREFIX = Buffer.from(utils_1.bytes.utf8.encode("auction_house"));
+        this.FEE_PAYER = Buffer.from(utils_1.bytes.utf8.encode("fee_payer"));
+        this.TREASURY = Buffer.from(utils_1.bytes.utf8.encode("treasury"));
+        this.SIGNER = Buffer.from(utils_1.bytes.utf8.encode("signer"));
         // Constant accounts.
         this.authority = web3_js_1.Keypair.generate().publicKey;
         this.feeWithdrawalDestination = web3_js_1.Keypair.generate().publicKey;
