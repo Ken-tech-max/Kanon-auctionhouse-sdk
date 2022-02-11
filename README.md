@@ -19,7 +19,8 @@ const program = new KanonProgramAdapter(provider, {
 ```typescript
 // re-initialize KanonProgramAdapter with updated provider
 const program = new KanonProgramAdapter(provider, {
-  isDevNet: true
+  isDevNet: true,
+  authority: "hex string address",
 });
 
 // initialize user reserved PDA addresses

@@ -162,3 +162,12 @@ export async function getTokenAmount(
   }
   return amount;
 }
+
+
+export async function loadAuctionHouseProgram(
+  _provider:Provider
+) {
+  const provider = _provider
+  const idl:any = await Program.fetchIdl(AUCTION_HOUSE_PROGRAM_ID, provider);
+  return new Program(idl, AUCTION_HOUSE_PROGRAM_ID, provider);
+}
