@@ -60,7 +60,7 @@ export default class KanonAuctionProgramAdapter {
     /**
        * create auction house
       */
-    createAuctionHouse(requiresSignOff: boolean, treasuryWithdrawalDestination: PublicKey, feeWithdrawalDestination: PublicKey, sfbp: any, canChangeSalePrice: boolean): Promise<anchor.web3.Transaction>;
+    createAuctionHouse(requiresSignOff: boolean, treasuryWithdrawalDestinationOwner: PublicKey, feeWithdrawalDestination: PublicKey, sfbp: any, canChangeSalePrice: boolean, treasuryWithdrawalDestination: PublicKey): Promise<anchor.web3.Transaction>;
     /**
      *
      * deposit into escrow acount
@@ -89,9 +89,9 @@ export default class KanonAuctionProgramAdapter {
     /**
      * Withdraws from the treasury account
      */
-    withFromTreasury(amount: BN): Promise<any>;
+    withFromTreasury(amount: BN, treasuryWithdrawalDestination: PublicKey): Promise<any>;
     /**Update auction house */
-    updateAuctionHouse(requiresSignOff: boolean, treasuryWithdrawalDestination: PublicKey, feeWithdrawalDestination: PublicKey, sfbp: any, canChangeSalePrice: boolean): Promise<any>;
+    updateAuctionHouse(requiresSignOff: boolean, treasuryWithdrawalDestinationOwner: PublicKey, feeWithdrawalDestination: PublicKey, sfbp: any, canChangeSalePrice: boolean, treasuryWithdrawalDestination: PublicKey): Promise<any>;
     /**
      * get auction house accounts
      */
