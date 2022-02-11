@@ -23,20 +23,20 @@ export default class KanonAuctionProgramAdapter {
     protected FEE_PAYER: Buffer;
     protected TREASURY: Buffer;
     protected SIGNER: Buffer;
-    protected authority: any;
-    protected feeWithdrawalDestination: any;
-    protected treasuryWithdrawalDestination: any;
-    protected treasuryWithdrawalDestinationOwner: any;
+    protected authority: PublicKey;
+    protected feeWithdrawalDestination: PublicKey;
+    protected treasuryWithdrawalDestination: PublicKey;
+    protected treasuryWithdrawalDestinationOwner: PublicKey;
     protected treasuryMint: anchor.web3.PublicKey;
     protected tokenProgram: anchor.web3.PublicKey;
     protected systemProgram: anchor.web3.PublicKey;
     protected ataProgram: anchor.web3.PublicKey;
     protected rent: anchor.web3.PublicKey;
-    protected metadata: any;
-    protected programAsSigner: any;
-    protected auctionHouse: any;
-    protected auctionHouseTreasury: any;
-    protected auctionHouseFeeAccount: any;
+    protected metadata: PublicKey;
+    protected programAsSigner: PublicKey;
+    protected auctionHouse: PublicKey;
+    protected auctionHouseTreasury: PublicKey;
+    protected auctionHouseFeeAccount: PublicKey;
     protected programAsSignerBump: number;
     protected auctionHouseTreasuryBump: number;
     protected auctionHouseFeeAccountBump: number;
@@ -76,7 +76,7 @@ export default class KanonAuctionProgramAdapter {
     /**
      * Sell Nft
      */
-    sellNft(mint: PublicKey, buyPriceAdjusted: BN, tokenSizeAdjusted: BN, auctionHouse: PublicKey): Promise<anchor.web3.Transaction>;
+    sellNft(mint: PublicKey, buyPriceAdjusted: BN, tokenSizeAdjusted: BN): Promise<anchor.web3.Transaction>;
     /**
      * Execute Sale
      *

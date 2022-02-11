@@ -17,10 +17,9 @@ const program = new KanonProgramAdapter(provider, {
 
 ## Initialize with connected wallet
 ```typescript
-// re-initialize KanonProgramAdapter with updated provider
-const program = new KanonProgramAdapter(provider, {
+// re-initialize KanonAuctionProgramAdapter with updated provider
+const program = new KanonAuctionProgramAdapter(provider, {
   isDevNet: true,
-  authority: "hex string address",
 });
 
 // initialize user reserved PDA addresses

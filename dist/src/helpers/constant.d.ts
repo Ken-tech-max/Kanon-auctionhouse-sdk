@@ -33,6 +33,8 @@ export declare const TOKEN_ENTANGLEMENT_PROGRAM_ID: PublicKey;
 export declare const WRAPPED_SOL_MINT: PublicKey;
 export declare const GUMDROP_DISTRIBUTOR_ID: PublicKey;
 export declare const GUMDROP_TEMPORAL_SIGNER: PublicKey;
+export declare const AUCTIONHOUSE_ACCOUNT_KEY_DEVNET = "2JG4FMfu8Vx84RamR2jz6BhfE4dFcteEux4xawh6LPCZ";
+export declare const AUCTIONHOUSE_ACCOUNT_KEY_MAINNET = "";
 export declare const CONFIG_ARRAY_START: number;
 export declare const CONFIG_ARRAY_START_V2: number;
 export declare const CONFIG_LINE_SIZE_V2: number;

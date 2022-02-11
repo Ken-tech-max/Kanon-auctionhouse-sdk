@@ -24,7 +24,9 @@ import {
   TOKEN_METADATA_PROGRAM_ID,
   AUCTION_HOUSE_PROGRAM_ID,
   NATIVE_SOL_MINT,
-  WRAPPED_SOL_MINT
+  WRAPPED_SOL_MINT,
+  AUCTIONHOUSE_ACCOUNT_KEY_MAINNET,
+  AUCTIONHOUSE_ACCOUNT_KEY_DEVNET
 } from "../helpers/constant";
 import { getAtaForMint, getAuctionHouseBuyerEscrow, getAuctionHouseProgramAsSigner, getAuctionHouseTradeState, getMetadata, getPriceWithMantissa, getTokenAmount, loadAuctionHouseProgram } from '../helpers/util';
 import { decodeMetadata, Metadata } from '../helpers/schema';
@@ -59,10 +61,10 @@ export default class KanonAuctionProgramAdapter {
   
 
   // Constant accounts.
-  protected authority: any;
-  protected feeWithdrawalDestination: any;
-  protected treasuryWithdrawalDestination: any;
-  protected treasuryWithdrawalDestinationOwner: any;
+  protected authority : PublicKey = Keypair.generate().publicKey;
+  protected feeWithdrawalDestination:PublicKey = Keypair.generate().publicKey;
+  protected treasuryWithdrawalDestination:  PublicKey = Keypair.generate().publicKey;
+  protected treasuryWithdrawalDestinationOwner: PublicKey = Keypair.generate().publicKey;
   protected treasuryMint = NATIVE_SOL_MINT;
   protected tokenProgram = TOKEN_PROGRAM_ID;
   protected systemProgram = SystemProgram.programId;
@@ -70,11 +72,11 @@ export default class KanonAuctionProgramAdapter {
   protected rent = SYSVAR_RENT_PUBKEY;
 
   // Uninitialized constant accounts.
-  protected metadata: any;
-  protected programAsSigner: any;
-  protected auctionHouse: any;
-  protected auctionHouseTreasury: any;
-  protected auctionHouseFeeAccount: any;
+  protected metadata: PublicKey = Keypair.generate().publicKey;
+  protected programAsSigner: PublicKey = Keypair.generate().publicKey;
+  protected auctionHouse : PublicKey = Keypair.generate().publicKey;
+  protected auctionHouseTreasury: PublicKey = Keypair.generate().publicKey;
+  protected auctionHouseFeeAccount: PublicKey = Keypair.generate().publicKey;
   protected programAsSignerBump = 0;
   protected auctionHouseTreasuryBump = 0;
   protected auctionHouseFeeAccountBump = 0;
@@ -107,8 +109,9 @@ export default class KanonAuctionProgramAdapter {
 
     this._provider = provider;
     this._config = config;
-    this.authority = new PublicKey(config.authority);  //Important this must be admin's public key
-
+    this.authority= config.isDevNet ?
+    new PublicKey(AUCTIONHOUSE_ACCOUNT_KEY_DEVNET) :
+    new PublicKey(AUCTIONHOUSE_ACCOUNT_KEY_MAINNET);
   }
 
   public getProgram(): Program {
@@ -127,7 +130,7 @@ export default class KanonAuctionProgramAdapter {
    * update accounts for connected wallet
    */
   public async refreshByWallet() {
-    const [_auctionHouse, _bump] = await PublicKey.findProgramAddress(
+    const [_auctionHouse, _bump] = await anchor.web3.PublicKey.findProgramAddress(
       [
         this.PREFIX,
         this.authority.toBuffer(),
@@ -135,7 +138,7 @@ export default class KanonAuctionProgramAdapter {
       ],
       AUCTION_HOUSE_PROGRAM_ID,
     );
-    const [_auctionHouseFeeAccount, _auctionHouseFeeAccountBump] = await PublicKey.findProgramAddress(
+    const [_auctionHouseFeeAccount, _auctionHouseFeeAccountBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
         this.PREFIX,
         _auctionHouse.toBuffer(),
@@ -143,7 +146,7 @@ export default class KanonAuctionProgramAdapter {
       ],
       AUCTION_HOUSE_PROGRAM_ID,
     );
-    const [_auctionHouseTreasury, _auctionHouseTreasuryBump] = await PublicKey.findProgramAddress(
+    const [_auctionHouseTreasury, _auctionHouseTreasuryBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
         this.PREFIX,
         _auctionHouse.toBuffer(),
@@ -151,7 +154,7 @@ export default class KanonAuctionProgramAdapter {
       ],
       AUCTION_HOUSE_PROGRAM_ID,
     );
-    const [_buyerEscrow, _buyerEscrowBump] = await PublicKey.findProgramAddress(
+    const [_buyerEscrow, _buyerEscrowBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
         this.PREFIX,
         _auctionHouse.toBuffer(),
@@ -160,7 +163,7 @@ export default class KanonAuctionProgramAdapter {
       AUCTION_HOUSE_PROGRAM_ID,
     );
     const [_programAsSigner, _programAsSignerBump] = await
-      PublicKey.findProgramAddress(
+      anchor.web3.PublicKey.findProgramAddress(
         [
           this.PREFIX,
           this.SIGNER,
@@ -439,9 +442,8 @@ export default class KanonAuctionProgramAdapter {
   /**
    * Sell Nft
    */
-  public async sellNft(mint: PublicKey, buyPriceAdjusted: BN, tokenSizeAdjusted: BN, auctionHouse:PublicKey) {
+  public async sellNft(mint: PublicKey, buyPriceAdjusted: BN, tokenSizeAdjusted: BN) {
     let sellerClient = this.auctionHouseProgram;
-    this.auctionHouse = auctionHouse;
     const mintKey = new anchor.web3.PublicKey(mint);
 
     const tokenAccountKey = (
