@@ -63,7 +63,7 @@ export const GUMDROP_TEMPORAL_SIGNER = new PublicKey(
 );
 
 export const AUCTIONHOUSE_ACCOUNT_KEY_DEVNET = "2JG4FMfu8Vx84RamR2jz6BhfE4dFcteEux4xawh6LPCZ";
-export const AUCTIONHOUSE_ACCOUNT_KEY_MAINNET = "";
+export const AUCTIONHOUSE_ACCOUNT_KEY_MAINNET = "2JG4FMfu8Vx84RamR2jz6BhfE4dFcteEux4xawh6LPCZ";
 
 
 

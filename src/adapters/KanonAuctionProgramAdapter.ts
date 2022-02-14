@@ -111,8 +111,8 @@ export default class KanonAuctionProgramAdapter {
 
     this._provider = provider;
     this._config = config;
-    this.authority= config.isDevNet ?
-    new PublicKey(AUCTIONHOUSE_ACCOUNT_KEY_DEVNET) :
+    this.authority= config.authority ?
+    new PublicKey(config.authority) :
     new PublicKey(AUCTIONHOUSE_ACCOUNT_KEY_MAINNET);
   }
 
