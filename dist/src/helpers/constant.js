@@ -38,7 +38,7 @@ exports.WRAPPED_SOL_MINT = new web3_js_1.PublicKey('So11111111111111111111111111
 exports.GUMDROP_DISTRIBUTOR_ID = new web3_js_1.PublicKey('gdrpGjVffourzkdDRrQmySw4aTHr8a3xmQzzxSwFD1a');
 exports.GUMDROP_TEMPORAL_SIGNER = new web3_js_1.PublicKey('MSv9H2sMceAzccBganUXwGq3GXgqYAstmZAbFDZYbAV');
 exports.AUCTIONHOUSE_ACCOUNT_KEY_DEVNET = "2JG4FMfu8Vx84RamR2jz6BhfE4dFcteEux4xawh6LPCZ";
-exports.AUCTIONHOUSE_ACCOUNT_KEY_MAINNET = "";
+exports.AUCTIONHOUSE_ACCOUNT_KEY_MAINNET = "2JG4FMfu8Vx84RamR2jz6BhfE4dFcteEux4xawh6LPCZ";
 exports.CONFIG_ARRAY_START = 32 + // authority
     4 +
     6 + // uuid + u32 len

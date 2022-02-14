@@ -88,8 +88,8 @@ class KanonAuctionProgramAdapter {
             new anchor_1.Program(kanon_program_mainnet_json_1.default, this._program_id, provider);
         this._provider = provider;
         this._config = config;
-        this.authority = config.isDevNet ?
-            new web3_js_1.PublicKey(constant_1.AUCTIONHOUSE_ACCOUNT_KEY_DEVNET) :
+        this.authority = config.authority ?
+            new web3_js_1.PublicKey(config.authority) :
             new web3_js_1.PublicKey(constant_1.AUCTIONHOUSE_ACCOUNT_KEY_MAINNET);
     }
     getProgram() {
