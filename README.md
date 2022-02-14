@@ -20,6 +20,7 @@ const program = new KanonProgramAdapter(provider, {
 // re-initialize KanonAuctionProgramAdapter with updated provider
 const program = new KanonAuctionProgramAdapter(provider, {
   isDevNet: true,
+  authority: "2JG4FMfu8Vx84RamR2jz6BhfE4dFcteEux4xawh6LPCZ"
 });
 
 // initialize user reserved PDA addresses
