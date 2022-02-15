@@ -17,8 +17,8 @@ import * as metaplex from '@metaplex/js';
 import { IDL, AuctionHouse } from '../types/kanon_program_devnet';
 import { NodeWallet } from "@metaplex/js";
 import { KanonProgramConfig } from '..';
-import idl_devnet from "../idl/kanon_program_devnet.json";
-import idl_mainnet from "../idl/kanon_program_mainnet.json"; //change when mainnet idl is added
+import idl_devnet from "../idl/kanon_auctionhouse_devnet.json";
+import idl_mainnet from "../idl/kanon_auctionhouse_mainnet.json"; //change when mainnet idl is added
 import { Program, Provider, Idl, BN, } from "@project-serum/anchor";
 import {
   TOKEN_METADATA_PROGRAM_ID,

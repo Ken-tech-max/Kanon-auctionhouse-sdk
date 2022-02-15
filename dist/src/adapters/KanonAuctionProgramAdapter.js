@@ -35,8 +35,8 @@ const anchor = __importStar(require("@project-serum/anchor"));
 const web3_js_1 = require("@solana/web3.js");
 const spl_token_1 = require("@solana/spl-token");
 const metaplex = __importStar(require("@metaplex/js"));
-const kanon_program_devnet_json_1 = __importDefault(require("../idl/kanon_program_devnet.json"));
-const kanon_program_mainnet_json_1 = __importDefault(require("../idl/kanon_program_mainnet.json")); //change when mainnet idl is added
+const kanon_auctionhouse_devnet_json_1 = __importDefault(require("../idl/kanon_auctionhouse_devnet.json"));
+const kanon_auctionhouse_mainnet_json_1 = __importDefault(require("../idl/kanon_auctionhouse_mainnet.json")); //change when mainnet idl is added
 const anchor_1 = require("@project-serum/anchor");
 const constant_1 = require("../helpers/constant");
 const util_1 = require("../helpers/util");
@@ -81,11 +81,11 @@ class KanonAuctionProgramAdapter {
         // initialize anchor program instance
         // initialize anchor program instance
         this._program_id = config.isDevNet ?
-            new web3_js_1.PublicKey(kanon_program_devnet_json_1.default.metadata.address) :
-            new web3_js_1.PublicKey(kanon_program_mainnet_json_1.default.metadata.address);
+            new web3_js_1.PublicKey(kanon_auctionhouse_devnet_json_1.default.metadata.address) :
+            new web3_js_1.PublicKey(kanon_auctionhouse_mainnet_json_1.default.metadata.address);
         this._program = config.isDevNet ?
-            new anchor_1.Program(kanon_program_devnet_json_1.default, this._program_id, provider) :
-            new anchor_1.Program(kanon_program_mainnet_json_1.default, this._program_id, provider);
+            new anchor_1.Program(kanon_auctionhouse_devnet_json_1.default, this._program_id, provider) :
+            new anchor_1.Program(kanon_auctionhouse_mainnet_json_1.default, this._program_id, provider);
         this._provider = provider;
         this._config = config;
         this.authority = config.authority ?
