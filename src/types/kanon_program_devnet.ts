@@ -291,7 +291,7 @@ export type AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -366,7 +366,7 @@ export type AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -426,7 +426,7 @@ export type AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -511,7 +511,7 @@ export type AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -613,7 +613,7 @@ export type AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -720,7 +720,7 @@ export type AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -833,6 +833,83 @@ export type AuctionHouse = {
           }
         ]
       }
+    }
+  ],
+  "events": [
+    {
+      "name": "ExecuteSaleEvent",
+      "fields": [
+        {
+          "name": "nftMintAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "buyerWalletAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "sellerWalletAddress",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "BuyEvent",
+      "fields": [
+        {
+          "name": "nftMintAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "buyerWalletAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "price",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CancelEvent",
+      "fields": [
+        {
+          "name": "nftMintAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "buyerWalletAddress",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "SellEvent",
+      "fields": [
+        {
+          "name": "nftMintAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "sellerWalletAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "price",
+          "type": "u64",
+          "index": false
+        }
+      ]
     }
   ],
   "errors": [
@@ -958,7 +1035,7 @@ export type AuctionHouse = {
     }
   ]
 };
- 
+
 export const IDL: AuctionHouse = {
   "version": "0.1.0",
   "name": "auction_house",
@@ -1252,7 +1329,7 @@ export const IDL: AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -1327,7 +1404,7 @@ export const IDL: AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -1387,7 +1464,7 @@ export const IDL: AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -1472,7 +1549,7 @@ export const IDL: AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -1574,7 +1651,7 @@ export const IDL: AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -1681,7 +1758,7 @@ export const IDL: AuctionHouse = {
         {
           "name": "authority",
           "isMut": false,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "auctionHouse",
@@ -1794,6 +1871,83 @@ export const IDL: AuctionHouse = {
           }
         ]
       }
+    }
+  ],
+  "events": [
+    {
+      "name": "ExecuteSaleEvent",
+      "fields": [
+        {
+          "name": "nftMintAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "buyerWalletAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "sellerWalletAddress",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "BuyEvent",
+      "fields": [
+        {
+          "name": "nftMintAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "buyerWalletAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "price",
+          "type": "u64",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "CancelEvent",
+      "fields": [
+        {
+          "name": "nftMintAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "buyerWalletAddress",
+          "type": "publicKey",
+          "index": false
+        }
+      ]
+    },
+    {
+      "name": "SellEvent",
+      "fields": [
+        {
+          "name": "nftMintAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "sellerWalletAddress",
+          "type": "publicKey",
+          "index": false
+        },
+        {
+          "name": "price",
+          "type": "u64",
+          "index": false
+        }
+      ]
     }
   ],
   "errors": [
@@ -1919,3 +2073,5 @@ export const IDL: AuctionHouse = {
     }
   ]
 };
+
+
