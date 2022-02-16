@@ -374,24 +374,24 @@ export default class KanonAuctionProgramAdapter {
   /*
   Cancels an offer
   */
-  public async cancelOffer(buyerPrice: BN, tokenSize: BN, mint: PublicKey) {
+  public async cancelOffer(buyerPrice: BN, tokenSize: BN, mint: PublicKey,user:PublicKey) {
     let buyerClient = this.auctionHouseProgram;
 
     const mintKey = new anchor.web3.PublicKey(mint);
+    const User = new anchor.web3.PublicKey(user);
 
     const buyPriceAdjusted = buyerPrice;
     const tokenSizeAdjusted = tokenSize;
 
     const tokenAccountKey = (
-      await getAtaForMint(mintKey, this._provider.wallet.publicKey)
+      await getAtaForMint(mintKey, User)
     )[0];
 
     const tradeState = (
       await getAuctionHouseTradeState(
         this.auctionHouse,
-        this._provider.wallet.publicKey,
+        User,
         tokenAccountKey,
-
         this.treasuryMint,
         mintKey,
         tokenSizeAdjusted,
@@ -407,25 +407,19 @@ export default class KanonAuctionProgramAdapter {
         tokenSizeAdjusted,
         {
           accounts: {
-            wallet: this._provider.wallet.publicKey.toBuffer(),
+            wallet: User.toBuffer(),
             tokenAccount: tokenAccountKey,
             tokenMint: mintKey,
-
             authority: this.authority,
             auctionHouse: this.auctionHouse,
-
             auctionHouseFeeAccount: this.auctionHouseFeeAccount,
             tradeState,
             tokenProgram: TOKEN_PROGRAM_ID,
           },
-          // signers: [authorityClient.provider.wallet.payer],
         },
       )
     )
-
-
     return tx;
-
   }
 
 
@@ -555,7 +549,6 @@ export default class KanonAuctionProgramAdapter {
         this.auctionHouse,
         sellerWalletKey,
         tokenAccountKey,
-
         this.treasuryMint,
         mintKey,
         tokenSizeAdjusted,
@@ -583,7 +576,6 @@ export default class KanonAuctionProgramAdapter {
         remainingAccounts.push({
           pubkey: (
             await getAtaForMint(
-
               this.treasuryMint,
               remainingAccounts[remainingAccounts.length - 1].pubkey,
             )
@@ -649,7 +641,6 @@ export default class KanonAuctionProgramAdapter {
    */
   public async withdrawFromFee(amount: BN , feeWithdrawalDestination:PublicKey) {
     let authorityClient = this.auctionHouseProgram;
-
     let acc = {
       authority: this.authority,
       feeWithdrawalDestination: feeWithdrawalDestination,
@@ -657,9 +648,7 @@ export default class KanonAuctionProgramAdapter {
       auctionHouse: this.auctionHouse,
       systemProgram: this.systemProgram,
     }
-
     const amountAdjusted = amount;
-
     let tx = new Transaction();
     tx.add(await authorityClient.instruction.withdrawFromFee(
       amountAdjusted,
@@ -667,9 +656,7 @@ export default class KanonAuctionProgramAdapter {
         accounts: acc,
       }
     ))
-
     return tx;
-
   }
 
   /**
