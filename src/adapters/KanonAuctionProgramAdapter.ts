@@ -434,9 +434,10 @@ export default class KanonAuctionProgramAdapter {
   public async sellNft(mint: PublicKey, buyPriceAdjusted: any, tokenSizeAdjusted: any , user:PublicKey) {
     let sellerClient = this.auctionHouseProgram;
     const mintKey = new anchor.web3.PublicKey(mint);
+    const User = new anchor.web3.PublicKey(user);
 
     const tokenAccountKey = (
-      await getAtaForMint(mintKey, user)
+      await getAtaForMint(mintKey, User)
     )[0];
 
     const tokenSize = new BN(
@@ -453,7 +454,7 @@ export default class KanonAuctionProgramAdapter {
 
     const [freeTradeState, freeTradeBump] = await getAuctionHouseTradeState(
       this.auctionHouse,
-      user,
+      User,
       tokenAccountKey,
       this.treasuryMint,
       mintKey,
@@ -463,7 +464,7 @@ export default class KanonAuctionProgramAdapter {
 
     const [tradeState, tradeBump] = await getAuctionHouseTradeState(
       this.auctionHouse,
-      user,
+      User,
       tokenAccountKey,
       this.treasuryMint,
       mintKey,
@@ -483,7 +484,7 @@ export default class KanonAuctionProgramAdapter {
       tokenSizeAdjusted,
       {
         accounts: {
-          wallet: user,
+          wallet: User,
           metadata: await getMetadata(mintKey),
           tokenAccount: tokenAccountKey,
           authority: this.authority,
