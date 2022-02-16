@@ -110,26 +110,26 @@ class KanonAuctionProgramAdapter {
                 this.PREFIX,
                 this.authority.toBuffer(),
                 this.treasuryMint.toBuffer(),
-            ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
+            ], this._program_id);
             const [_auctionHouseFeeAccount, _auctionHouseFeeAccountBump] = yield anchor.web3.PublicKey.findProgramAddress([
                 this.PREFIX,
                 _auctionHouse.toBuffer(),
                 this.FEE_PAYER,
-            ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
+            ], this._program_id);
             const [_auctionHouseTreasury, _auctionHouseTreasuryBump] = yield anchor.web3.PublicKey.findProgramAddress([
                 this.PREFIX,
                 _auctionHouse.toBuffer(),
                 this.TREASURY,
-            ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
+            ], this._program_id);
             const [_buyerEscrow, _buyerEscrowBump] = yield anchor.web3.PublicKey.findProgramAddress([
                 this.PREFIX,
                 _auctionHouse.toBuffer(),
                 this._provider.wallet.publicKey.toBuffer(), // Important here the provider should be buyer
-            ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
+            ], this._program_id);
             const [_programAsSigner, _programAsSignerBump] = yield anchor.web3.PublicKey.findProgramAddress([
                 this.PREFIX,
                 this.SIGNER,
-            ], constant_1.AUCTION_HOUSE_PROGRAM_ID);
+            ], this._program_id);
             this.auctionHouseProgram = this._program;
             this.auctionHouse = _auctionHouse;
             this.bump = _bump;

@@ -138,7 +138,7 @@ export default class KanonAuctionProgramAdapter {
         this.authority.toBuffer(),
         this.treasuryMint.toBuffer(),
       ],
-      AUCTION_HOUSE_PROGRAM_ID,
+      this._program_id
     );
     const [_auctionHouseFeeAccount, _auctionHouseFeeAccountBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
@@ -146,15 +146,15 @@ export default class KanonAuctionProgramAdapter {
         _auctionHouse.toBuffer(),
         this.FEE_PAYER,
       ],
-      AUCTION_HOUSE_PROGRAM_ID
-    );
+      this._program_id
+      );
     const [_auctionHouseTreasury, _auctionHouseTreasuryBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
         this.PREFIX,
         _auctionHouse.toBuffer(),
         this.TREASURY,
       ],
-      AUCTION_HOUSE_PROGRAM_ID,
+      this._program_id,
     );
     const [_buyerEscrow, _buyerEscrowBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
@@ -162,7 +162,7 @@ export default class KanonAuctionProgramAdapter {
         _auctionHouse.toBuffer(),
         this._provider.wallet.publicKey.toBuffer(),  // Important here the provider should be buyer
       ],
-      AUCTION_HOUSE_PROGRAM_ID,
+      this._program_id,
     );
     const [_programAsSigner, _programAsSignerBump] = await
       anchor.web3.PublicKey.findProgramAddress(
@@ -170,7 +170,7 @@ export default class KanonAuctionProgramAdapter {
           this.PREFIX,
           this.SIGNER,
         ],
-        AUCTION_HOUSE_PROGRAM_ID,
+        this._program_id,
       );
 
     this.auctionHouseProgram = this._program;
