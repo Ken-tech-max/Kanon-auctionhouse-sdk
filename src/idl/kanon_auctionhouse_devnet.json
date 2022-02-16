@@ -835,83 +835,6 @@
       }
     }
   ],
-  "events": [
-    {
-      "name": "ExecuteSaleEvent",
-      "fields": [
-        {
-          "name": "nftMintAddress",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "buyerWalletAddress",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "sellerWalletAddress",
-          "type": "publicKey",
-          "index": false
-        }
-      ]
-    },
-    {
-      "name": "BuyEvent",
-      "fields": [
-        {
-          "name": "nftMintAddress",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "buyerWalletAddress",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "price",
-          "type": "u64",
-          "index": false
-        }
-      ]
-    },
-    {
-      "name": "CancelEvent",
-      "fields": [
-        {
-          "name": "nftMintAddress",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "buyerWalletAddress",
-          "type": "publicKey",
-          "index": false
-        }
-      ]
-    },
-    {
-      "name": "SellEvent",
-      "fields": [
-        {
-          "name": "nftMintAddress",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "sellerWalletAddress",
-          "type": "publicKey",
-          "index": false
-        },
-        {
-          "name": "price",
-          "type": "u64",
-          "index": false
-        }
-      ]
-    }
-  ],
   "errors": [
     {
       "code": 6000,
@@ -1035,6 +958,6 @@
     }
   ],
   "metadata": {
-    "address": "knahuyiwGe3Nt7qqF9YQXqXh91PU1kN3a8ejQHkpfrR"
+    "address": "hausS13jsjafwWwGqZTUQRmWyvyxn9EQpqMwV1PBBmk"
   }
 }
