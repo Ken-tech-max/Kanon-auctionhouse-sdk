@@ -87,8 +87,7 @@ export default class KanonAuctionProgramAdapter {
   protected auctionHouseProgram: any;
 
   protected buyerTokenAccount: any;
-  protected buyerEscrow: any;
-  protected buyerEscrowBump: number = 0;
+  
 
   // Seller specific vars.
   protected sellerWallet: any;
@@ -153,14 +152,7 @@ export default class KanonAuctionProgramAdapter {
       ],
       this._program_id,
     );
-    const [_buyerEscrow, _buyerEscrowBump] = await anchor.web3.PublicKey.findProgramAddress(
-      [
-        this.PREFIX,
-        _auctionHouse.toBuffer(),
-        this._provider.wallet.publicKey.toBuffer(),  // Important here the provider should be buyer
-      ],
-      this._program_id,
-    );
+  
     const [_programAsSigner, _programAsSignerBump] = await
       anchor.web3.PublicKey.findProgramAddress(
         [
@@ -177,8 +169,6 @@ export default class KanonAuctionProgramAdapter {
     this.auctionHouseFeeAccountBump = _auctionHouseFeeAccountBump;
     this.auctionHouseTreasury = _auctionHouseTreasury;
     this.auctionHouseTreasuryBump = _auctionHouseTreasuryBump;
-    this.buyerEscrow = _buyerEscrow;
-    this.buyerEscrowBump = _buyerEscrowBump;
     this.programAsSigner = _programAsSigner;
     this.programAsSignerBump = _programAsSignerBump;
   }
@@ -249,14 +239,24 @@ export default class KanonAuctionProgramAdapter {
    * deposit into escrow acount
    *  */
 
-  public async deposit(amount: BN , transferAuthority:PublicKey) {
+  public async deposit(amount: BN , transferAuthority:PublicKey, user:PublicKey) {
+    const User = new anchor.web3.PublicKey(user);
+    const [_buyerEscrow, _buyerEscrowBump] = await anchor.web3.PublicKey.findProgramAddress(
+      [
+        this.PREFIX,
+        this.auctionHouse.toBuffer(),
+        User.toBuffer(),  // Important here the provider should be buyer
+      ],
+      this._program_id,
+    );
+
     const buyerClient = this.auctionHouseProgram;
     let acc: any = {
       accounts: {
         wallet: this._provider.wallet.publicKey, //buyer wallet
         paymentAccount: this._provider.wallet.publicKey,
         transferAuthority:transferAuthority,
-        escrowPaymentAccount: this.buyerEscrow,
+        escrowPaymentAccount: _buyerEscrow,
         treasuryMint: this.treasuryMint,
         authority: this.authority,
         auctionHouse: this.auctionHouse,
@@ -267,7 +267,7 @@ export default class KanonAuctionProgramAdapter {
       },
     }
     let tx = new Transaction()
-    tx.add(await buyerClient.instruction.deposit(this.buyerEscrowBump, amount, acc))
+    tx.add(await buyerClient.instruction.deposit(_buyerEscrowBump, amount, acc))
     return tx
   }
 
@@ -276,13 +276,22 @@ export default class KanonAuctionProgramAdapter {
   * 
   * Withdraws from an escrow account
   *  */
-  public async withdraw(amount: BN, transferAuthority: PublicKey) {
+  public async withdraw(amount: BN, transferAuthority: PublicKey, user:PublicKey) {
+    const User = new anchor.web3.PublicKey(user);
+    const [_buyerEscrow, _buyerEscrowBump] = await anchor.web3.PublicKey.findProgramAddress(
+      [
+        this.PREFIX,
+        this.auctionHouse.toBuffer(),
+        User.toBuffer(),  // Important here the provider should be buyer
+      ],
+      this._program_id,
+    );
     const buyerClient = this.auctionHouseProgram;
     let acc: any = {
       accounts: {
         wallet: this._provider.wallet.publicKey, //user wallet
         receiptAccount: this._provider.wallet.publicKey,
-        escrowPaymentAccount: this.buyerEscrow,
+        escrowPaymentAccount: _buyerEscrow,
         treasuryMint: this.treasuryMint,
         authority: this.authority,
         auctionHouse: this.auctionHouse,
@@ -295,7 +304,7 @@ export default class KanonAuctionProgramAdapter {
 
     // const amount = new BN(10*10**9);
     let tx = new Transaction()
-    tx.add(await buyerClient.instruction.withdraw(this.buyerEscrowBump, amount, acc))
+    tx.add(await buyerClient.instruction.withdraw(_buyerEscrowBump, amount, acc))
     return tx
   }
 
@@ -329,6 +338,14 @@ export default class KanonAuctionProgramAdapter {
       buyPriceAdjusted,
     );
 
+    const [_buyerEscrow, _buyerEscrowBump] = await anchor.web3.PublicKey.findProgramAddress(
+      [
+        this.PREFIX,
+        this.auctionHouse.toBuffer(),
+        User.toBuffer(),  // Important here the provider should be buyer
+      ],
+      this._program_id,
+    );
 
     const isNative = this.treasuryMint.equals(WRAPPED_SOL_MINT);
 
@@ -342,7 +359,7 @@ export default class KanonAuctionProgramAdapter {
     let tx = new Transaction()
     tx.add(await buyerClient.instruction.buy(
       tradeBump,
-      this.buyerEscrowBump,
+      _buyerEscrowBump,
       buyPriceAdjusted,
       tokenSizeAdjusted,
       {
@@ -354,7 +371,7 @@ export default class KanonAuctionProgramAdapter {
             : User,
           metadata: await getMetadata(mintKey),
           tokenAccount: tokenAccountKey,
-          escrowPaymentAccount: this.buyerEscrow,
+          escrowPaymentAccount: _buyerEscrow,
           treasuryMint: this.treasuryMint,
           authority: this.authority,
           auctionHouse: this.auctionHouse,
@@ -523,7 +540,6 @@ export default class KanonAuctionProgramAdapter {
         this.auctionHouse,
         buyerWalletKey,
         tokenAccountKey,
-
         this.treasuryMint,
         mintKey,
         tokenSizeAdjusted,
@@ -536,7 +552,6 @@ export default class KanonAuctionProgramAdapter {
         this.auctionHouse,
         sellerWalletKey,
         tokenAccountKey,
-
         this.treasuryMint,
         mintKey,
         tokenSizeAdjusted,
@@ -553,6 +568,15 @@ export default class KanonAuctionProgramAdapter {
         mintKey,
         tokenSizeAdjusted,
         new BN(0),
+      );
+
+      const [_buyerEscrow, _buyerEscrowBump] = await anchor.web3.PublicKey.findProgramAddress(
+        [
+          this.PREFIX,
+          this.auctionHouse.toBuffer(),
+          buyerWalletKey.toBuffer(),  // Important here the provider should be buyer
+        ],
+        this._program_id,
       );
 
     const metadata = await getMetadata(mintKey);
@@ -586,11 +610,12 @@ export default class KanonAuctionProgramAdapter {
       }
     }
 
+
     const tMint: anchor.web3.PublicKey = this.treasuryMint;
 
     let tx = new Transaction();
     tx.add(await sellerClient.instruction.executeSale(
-      this.buyerEscrowBump,
+      _buyerEscrowBump,
       freeTradeStateBump,
       this.programAsSignerBump,
       buyPriceAdjusted,
@@ -602,7 +627,7 @@ export default class KanonAuctionProgramAdapter {
           metadata,
           tokenAccount: tokenAccountKey,
           tokenMint: mintKey,
-          escrowPaymentAccount: this.buyerEscrow,
+          escrowPaymentAccount: _buyerEscrow,
           treasuryMint: tMint,
           sellerPaymentReceiptAccount: isNative
             ? sellerWalletKey
@@ -615,9 +640,7 @@ export default class KanonAuctionProgramAdapter {
 
           authority: this.authority,
           auctionHouse: this.auctionHouse,
-
           auctionHouseFeeAccount: this.auctionHouseFeeAccount,
-
           auctionHouseTreasury: this.auctionHouseTreasury,
           sellerTradeState,
           buyerTradeState,
@@ -629,7 +652,6 @@ export default class KanonAuctionProgramAdapter {
           freeTradeState,
         },
         remainingAccounts,
-        // signers: [authorityClient.provider.wallet.payer],
       },
     ));
 
