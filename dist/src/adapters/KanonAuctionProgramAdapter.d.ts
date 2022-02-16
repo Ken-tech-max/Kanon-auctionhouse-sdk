@@ -44,8 +44,6 @@ export default class KanonAuctionProgramAdapter {
     protected buyerWallet: any;
     protected auctionHouseProgram: any;
     protected buyerTokenAccount: any;
-    protected buyerEscrow: any;
-    protected buyerEscrowBump: number;
     protected sellerWallet: any;
     protected sellerTokenAccount: any;
     protected _program_id: PublicKey;
@@ -65,14 +63,14 @@ export default class KanonAuctionProgramAdapter {
      *
      * deposit into escrow acount
      *  */
-    deposit(amount: BN, transferAuthority: PublicKey): Promise<anchor.web3.Transaction>;
+    deposit(amount: BN, transferAuthority: PublicKey, user: PublicKey): Promise<anchor.web3.Transaction>;
     /**
     *
     * Withdraws from an escrow account
     *  */
-    withdraw(amount: BN, transferAuthority: PublicKey): Promise<anchor.web3.Transaction>;
+    withdraw(amount: BN, transferAuthority: PublicKey, user: PublicKey): Promise<anchor.web3.Transaction>;
     postOffer(buyerPrice: BN, tokenSize: BN, mintKey: PublicKey, user: PublicKey): Promise<anchor.web3.Transaction>;
-    cancelOffer(buyerPrice: BN, tokenSize: BN, mint: PublicKey): Promise<anchor.web3.Transaction>;
+    cancelOffer(buyerPrice: BN, tokenSize: BN, mint: PublicKey, user: PublicKey): Promise<anchor.web3.Transaction>;
     /**
      * Sell Nft
      */
