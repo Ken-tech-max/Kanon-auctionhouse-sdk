@@ -71,7 +71,7 @@ export default class KanonAuctionProgramAdapter {
     * Withdraws from an escrow account
     *  */
     withdraw(amount: BN, transferAuthority: PublicKey): Promise<anchor.web3.Transaction>;
-    postOffer(buyerPrice: BN, tokenSize: BN, mintKey: PublicKey): Promise<anchor.web3.Transaction>;
+    postOffer(buyerPrice: BN, tokenSize: BN, mintKey: PublicKey, user: PublicKey): Promise<anchor.web3.Transaction>;
     cancelOffer(buyerPrice: BN, tokenSize: BN, mint: PublicKey): Promise<anchor.web3.Transaction>;
     /**
      * Sell Nft

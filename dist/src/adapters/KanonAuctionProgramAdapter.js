@@ -241,26 +241,27 @@ class KanonAuctionProgramAdapter {
     /*
     * Posts an offer (BUY)
     */
-    postOffer(buyerPrice, tokenSize, mintKey) {
+    postOffer(buyerPrice, tokenSize, mintKey, user) {
         return __awaiter(this, void 0, void 0, function* () {
             let buyerClient = this.auctionHouseProgram;
             const zero = new spl_token_1.u64(0);
+            const User = new anchor.web3.PublicKey(user);
             const mint = new anchor.web3.PublicKey(mintKey);
             const buyPriceAdjusted = buyerPrice;
             const tokenSizeAdjusted = tokenSize;
             const results = yield buyerClient.provider.connection.getTokenLargestAccounts(mintKey);
             const tokenAccountKey = results.value[0].address;
-            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, this.treasuryMint, mint, tokenSizeAdjusted, buyPriceAdjusted);
+            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, User, tokenAccountKey, this.treasuryMint, mint, tokenSizeAdjusted, buyPriceAdjusted);
             const isNative = this.treasuryMint.equals(constant_1.WRAPPED_SOL_MINT);
-            const ata = (yield (0, util_1.getAtaForMint)(this.treasuryMint, this._provider.wallet.publicKey))[0];
+            const ata = (yield (0, util_1.getAtaForMint)(this.treasuryMint, User))[0];
             let tx = new web3_js_1.Transaction();
             tx.add(yield buyerClient.instruction.buy(tradeBump, this.buyerEscrowBump, buyPriceAdjusted, tokenSizeAdjusted, {
                 accounts: {
-                    wallet: this._provider.wallet.publicKey,
-                    paymentAccount: isNative ? this._provider.wallet.publicKey : ata,
+                    wallet: User,
+                    paymentAccount: isNative ? User : ata,
                     transferAuthority: isNative
                         ? anchor.web3.SystemProgram.programId
-                        : this._provider.wallet.publicKey,
+                        : User,
                     metadata: yield (0, util_1.getMetadata)(mintKey),
                     tokenAccount: tokenAccountKey,
                     escrowPaymentAccount: this.buyerEscrow,
