@@ -14,7 +14,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "rm -fr dist; tsc -b -verbose",
+    "build": "tsc -b -verbose",
     "lint": "eslint '**/*.ts' --fix"
   },
   "author": "indiangirldiscord@gmail.com",
