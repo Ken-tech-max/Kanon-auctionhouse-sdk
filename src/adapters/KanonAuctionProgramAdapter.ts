@@ -431,12 +431,12 @@ export default class KanonAuctionProgramAdapter {
   /**
    * Sell Nft
    */
-  public async sellNft(mint: PublicKey, buyPriceAdjusted: any, tokenSizeAdjusted: any) {
+  public async sellNft(mint: PublicKey, buyPriceAdjusted: any, tokenSizeAdjusted: any , user:PublicKey) {
     let sellerClient = this.auctionHouseProgram;
     const mintKey = new anchor.web3.PublicKey(mint);
 
     const tokenAccountKey = (
-      await getAtaForMint(mintKey, this._provider.wallet.publicKey)
+      await getAtaForMint(mintKey, user)
     )[0];
 
     const tokenSize = new BN(
@@ -453,7 +453,7 @@ export default class KanonAuctionProgramAdapter {
 
     const [freeTradeState, freeTradeBump] = await getAuctionHouseTradeState(
       this.auctionHouse,
-      this._provider.wallet.publicKey,
+      user,
       tokenAccountKey,
       this.treasuryMint,
       mintKey,
@@ -463,7 +463,7 @@ export default class KanonAuctionProgramAdapter {
 
     const [tradeState, tradeBump] = await getAuctionHouseTradeState(
       this.auctionHouse,
-      this._provider.wallet.publicKey,
+      user,
       tokenAccountKey,
       this.treasuryMint,
       mintKey,
@@ -473,8 +473,9 @@ export default class KanonAuctionProgramAdapter {
 
     let tx = new Transaction();
 
+    const signers: never[] = [];
 
-    tx.add(await sellerClient.instruction.sell(
+    let instructions = await sellerClient.instruction.sell(
       tradeBump,
       freeTradeBump,
       this.programAsSignerBump,
@@ -482,7 +483,7 @@ export default class KanonAuctionProgramAdapter {
       tokenSizeAdjusted,
       {
         accounts: {
-          wallet: this._provider.wallet.publicKey,
+          wallet: user,
           metadata: await getMetadata(mintKey),
           tokenAccount: tokenAccountKey,
           authority: this.authority,
@@ -495,10 +496,11 @@ export default class KanonAuctionProgramAdapter {
           programAsSigner: this.programAsSigner,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         },
+        signers
       },
-    ))
+    )
 
-    return tx
+    return instructions;
   }
 
   /**
