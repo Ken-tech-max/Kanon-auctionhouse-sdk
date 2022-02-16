@@ -25,8 +25,6 @@ import {
   AUCTION_HOUSE_PROGRAM_ID,
   NATIVE_SOL_MINT,
   WRAPPED_SOL_MINT,
-  AUCTIONHOUSE_ACCOUNT_KEY_MAINNET,
-  AUCTIONHOUSE_ACCOUNT_KEY_DEVNET
 } from "../helpers/constant";
 import { getAtaForMint, getAuctionHouseBuyerEscrow, getAuctionHouseProgramAsSigner, getAuctionHouseTradeState, getMetadata, getPriceWithMantissa, getTokenAmount, loadAuctionHouseProgram } from '../helpers/util';
 import { decodeMetadata, Metadata } from '../helpers/schema';
@@ -112,8 +110,7 @@ export default class KanonAuctionProgramAdapter {
     this._provider = provider;
     this._config = config;
     this.authority= config.authority ?
-    new PublicKey(config.authority) :
-    new PublicKey(AUCTIONHOUSE_ACCOUNT_KEY_MAINNET);
+    new PublicKey(config.authority) : Keypair.generate().publicKey;
   }
 
   public getProgram(): Program {
