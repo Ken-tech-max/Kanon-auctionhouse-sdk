@@ -89,8 +89,7 @@ class KanonAuctionProgramAdapter {
         this._provider = provider;
         this._config = config;
         this.authority = config.authority ?
-            new web3_js_1.PublicKey(config.authority) :
-            new web3_js_1.PublicKey(constant_1.AUCTIONHOUSE_ACCOUNT_KEY_MAINNET);
+            new web3_js_1.PublicKey(config.authority) : web3_js_1.Keypair.generate().publicKey;
     }
     getProgram() {
         return this._program;
@@ -309,19 +308,20 @@ class KanonAuctionProgramAdapter {
     /**
      * Sell Nft
      */
-    sellNft(mint, buyPriceAdjusted, tokenSizeAdjusted) {
+    sellNft(mint, buyPriceAdjusted, tokenSizeAdjusted, user) {
         return __awaiter(this, void 0, void 0, function* () {
             let sellerClient = this.auctionHouseProgram;
             const mintKey = new anchor.web3.PublicKey(mint);
-            const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, this._provider.wallet.publicKey))[0];
+            const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, user))[0];
             const tokenSize = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(tokenSizeAdjusted));
             const buyPrice = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(buyPriceAdjusted));
-            const [freeTradeState, freeTradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
-            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, this._provider.wallet.publicKey, tokenAccountKey, this.treasuryMint, mintKey, tokenSize, buyPrice);
+            const [freeTradeState, freeTradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, user, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
+            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, user, tokenAccountKey, this.treasuryMint, mintKey, tokenSize, buyPrice);
             let tx = new web3_js_1.Transaction();
-            tx.add(yield sellerClient.instruction.sell(tradeBump, freeTradeBump, this.programAsSignerBump, buyPriceAdjusted, tokenSizeAdjusted, {
+            const signers = [];
+            let instructions = yield sellerClient.instruction.sell(tradeBump, freeTradeBump, this.programAsSignerBump, buyPriceAdjusted, tokenSizeAdjusted, {
                 accounts: {
-                    wallet: this._provider.wallet.publicKey,
+                    wallet: user,
                     metadata: yield (0, util_1.getMetadata)(mintKey),
                     tokenAccount: tokenAccountKey,
                     authority: this.authority,
@@ -334,8 +334,9 @@ class KanonAuctionProgramAdapter {
                     programAsSigner: this.programAsSigner,
                     rent: anchor.web3.SYSVAR_RENT_PUBKEY,
                 },
-            }));
-            return tx;
+                signers
+            });
+            return instructions;
         });
     }
     /**
