@@ -312,16 +312,17 @@ class KanonAuctionProgramAdapter {
         return __awaiter(this, void 0, void 0, function* () {
             let sellerClient = this.auctionHouseProgram;
             const mintKey = new anchor.web3.PublicKey(mint);
-            const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, user))[0];
+            const User = new anchor.web3.PublicKey(user);
+            const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, User))[0];
             const tokenSize = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(tokenSizeAdjusted));
             const buyPrice = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(buyPriceAdjusted));
-            const [freeTradeState, freeTradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, user, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
-            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, user, tokenAccountKey, this.treasuryMint, mintKey, tokenSize, buyPrice);
+            const [freeTradeState, freeTradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, User, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
+            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, User, tokenAccountKey, this.treasuryMint, mintKey, tokenSize, buyPrice);
             let tx = new web3_js_1.Transaction();
             const signers = [];
             let instructions = yield sellerClient.instruction.sell(tradeBump, freeTradeBump, this.programAsSignerBump, buyPriceAdjusted, tokenSizeAdjusted, {
                 accounts: {
-                    wallet: user,
+                    wallet: User,
                     metadata: yield (0, util_1.getMetadata)(mintKey),
                     tokenAccount: tokenAccountKey,
                     authority: this.authority,
