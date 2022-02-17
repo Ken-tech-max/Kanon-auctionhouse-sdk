@@ -452,16 +452,17 @@ export default class KanonAuctionProgramAdapter {
       await getAtaForMint(mintKey, User)
     )[0];
 
-    const tokenSize = new BN(1);
+    const tokenSize = new BN(
+      await getPriceWithMantissa(
+        tokenSizeAdjusted,
+      ),
+    );
 
     const buyPrice = new BN(
       await getPriceWithMantissa(
         buyPriceAdjusted,
       ),
     );
-
-    const [programAsSigner, programAsSignerBump] =await getAuctionHouseProgramAsSigner();
-
 
     const [freeTradeState, freeTradeBump] = await getAuctionHouseTradeState(
       this.auctionHouse,
@@ -483,14 +484,10 @@ export default class KanonAuctionProgramAdapter {
       buyPrice,
     );
 
-    let tx = new Transaction();
-
-    const signers: never[] = [];
-
     let instructions = await sellerClient.instruction.sell(
       tradeBump,
       freeTradeBump,
-      programAsSignerBump,
+      this.programAsSignerBump,
       buyPriceAdjusted,
       tokenSizeAdjusted,
       {
@@ -505,11 +502,12 @@ export default class KanonAuctionProgramAdapter {
           freeSellerTradeState: freeTradeState,
           tokenProgram: TOKEN_PROGRAM_ID,
           systemProgram: anchor.web3.SystemProgram.programId,
-          programAsSigner: programAsSigner,
+          programAsSigner: this.programAsSigner,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         },
       },
     )
+
     return instructions;
   }
 
