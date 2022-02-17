@@ -47,7 +47,7 @@ export const FAIR_LAUNCH_PROGRAM_ID = new PublicKey(
   'faircnAB9k59Y4TXmLabBULeuTLgV7TkGMGNkjnA15j',
 );
 export const AUCTION_HOUSE_PROGRAM_ID = new PublicKey(
-  'hausS13jsjafwWwGqZTUQRmWyvyxn9EQpqMwV1PBBmk',
+  'knahuyiwGe3Nt7qqF9YQXqXh91PU1kN3a8ejQHkpfrR',
 );
 export const TOKEN_ENTANGLEMENT_PROGRAM_ID = new PublicKey(
   'qntmGodpGkrM42mN68VCZHXnKqDCT8rdY23wFcXCLPd',
