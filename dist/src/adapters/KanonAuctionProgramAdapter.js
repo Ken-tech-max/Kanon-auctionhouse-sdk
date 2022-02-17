@@ -324,14 +324,11 @@ class KanonAuctionProgramAdapter {
             const mintKey = new anchor.web3.PublicKey(mint);
             const User = new anchor.web3.PublicKey(user);
             const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, User))[0];
-            const tokenSize = new anchor_1.BN(1);
+            const tokenSize = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(tokenSizeAdjusted));
             const buyPrice = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(buyPriceAdjusted));
-            const [programAsSigner, programAsSignerBump] = yield (0, util_1.getAuctionHouseProgramAsSigner)();
             const [freeTradeState, freeTradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, User, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
             const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, User, tokenAccountKey, this.treasuryMint, mintKey, tokenSize, buyPrice);
-            let tx = new web3_js_1.Transaction();
-            const signers = [];
-            let instructions = yield sellerClient.instruction.sell(tradeBump, freeTradeBump, programAsSignerBump, buyPriceAdjusted, tokenSizeAdjusted, {
+            let instructions = yield sellerClient.instruction.sell(tradeBump, freeTradeBump, this.programAsSignerBump, buyPriceAdjusted, tokenSizeAdjusted, {
                 accounts: {
                     wallet: User,
                     metadata: yield (0, util_1.getMetadata)(mintKey),
@@ -343,7 +340,7 @@ class KanonAuctionProgramAdapter {
                     freeSellerTradeState: freeTradeState,
                     tokenProgram: spl_token_1.TOKEN_PROGRAM_ID,
                     systemProgram: anchor.web3.SystemProgram.programId,
-                    programAsSigner: programAsSigner,
+                    programAsSigner: this.programAsSigner,
                     rent: anchor.web3.SYSVAR_RENT_PUBKEY,
                 },
             });
