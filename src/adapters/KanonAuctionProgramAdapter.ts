@@ -452,11 +452,7 @@ export default class KanonAuctionProgramAdapter {
       await getAtaForMint(mintKey, User)
     )[0];
 
-    const tokenSize = new BN(
-      await getPriceWithMantissa(
-        tokenSizeAdjusted,
-      ),
-    );
+    const tokenSize = new BN(1);
 
     const buyPrice = new BN(
       await getPriceWithMantissa(
