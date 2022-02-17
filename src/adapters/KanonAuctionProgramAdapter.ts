@@ -464,6 +464,9 @@ export default class KanonAuctionProgramAdapter {
       ),
     );
 
+    const [programAsSigner, programAsSignerBump] =await getAuctionHouseProgramAsSigner();
+
+
     const [freeTradeState, freeTradeBump] = await getAuctionHouseTradeState(
       this.auctionHouse,
       User,
@@ -491,7 +494,7 @@ export default class KanonAuctionProgramAdapter {
     let instructions = await sellerClient.instruction.sell(
       tradeBump,
       freeTradeBump,
-      this.programAsSignerBump,
+      programAsSignerBump,
       buyPriceAdjusted,
       tokenSizeAdjusted,
       {
@@ -506,13 +509,11 @@ export default class KanonAuctionProgramAdapter {
           freeSellerTradeState: freeTradeState,
           tokenProgram: TOKEN_PROGRAM_ID,
           systemProgram: anchor.web3.SystemProgram.programId,
-          programAsSigner: this.programAsSigner,
+          programAsSigner: programAsSigner,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         },
-        signers
       },
     )
-
     return instructions;
   }
 
