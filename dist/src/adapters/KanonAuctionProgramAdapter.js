@@ -318,32 +318,99 @@ class KanonAuctionProgramAdapter {
     /**
      * Sell Nft
      */
-    sellNft(mint, buyPriceAdjusted, tokenSizeAdjusted, user) {
+    // public async sellNft(mint: PublicKey, buyPriceAdjusted: any, tokenSizeAdjusted: any, user: PublicKey) {
+    //   let sellerClient = this.auctionHouseProgram;
+    //   const mintKey = new anchor.web3.PublicKey(mint);
+    //   const User = new anchor.web3.PublicKey(user);
+    //   const tokenAccountKey = (
+    //     await getAtaForMint(mintKey, User)
+    //   )[0];
+    //   const tokenSize = new BN(
+    //     await getPriceWithMantissa(
+    //       tokenSizeAdjusted,
+    //     ),
+    //   );
+    //   const buyPrice = new BN(
+    //     await getPriceWithMantissa(
+    //       buyPriceAdjusted,
+    //     ),
+    //   );
+    //   const [freeTradeState, freeTradeBump] = await getAuctionHouseTradeState(
+    //     this.auctionHouse,
+    //     User,
+    //     tokenAccountKey,
+    //     this.treasuryMint,
+    //     mintKey,
+    //     tokenSizeAdjusted,
+    //     new BN(0),
+    //   );
+    //   const [tradeState, tradeBump] = await getAuctionHouseTradeState(
+    //     this.auctionHouse,
+    //     User,
+    //     tokenAccountKey,
+    //     this.treasuryMint,
+    //     mintKey,
+    //     tokenSize,
+    //     buyPrice,
+    //   );
+    //   let instructions = await sellerClient.instruction.sell(
+    //     tradeBump,
+    //     freeTradeBump,
+    //     this.programAsSignerBump,
+    //     buyPriceAdjusted,
+    //     tokenSizeAdjusted,
+    //     {
+    //       accounts: {
+    //         wallet: User,
+    //         metadata: await getMetadata(mintKey),
+    //         tokenAccount: tokenAccountKey,
+    //         authority: this.authority,
+    //         auctionHouse: this.auctionHouse,
+    //         auctionHouseFeeAccount: this.auctionHouseFeeAccount,
+    //         sellerTradeState: tradeState,
+    //         freeSellerTradeState: freeTradeState,
+    //         tokenProgram: TOKEN_PROGRAM_ID,
+    //         systemProgram: anchor.web3.SystemProgram.programId,
+    //         programAsSigner: this.programAsSigner,
+    //         rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+    //       },
+    //     },
+    //   )
+    //   return instructions;
+    // }
+    sellNFT(mint, buyPriceAdjusted, tokenSizeAdjusted, user) {
         return __awaiter(this, void 0, void 0, function* () {
-            let sellerClient = this.auctionHouseProgram;
+            let auctionHouseObj = yield this.getAuctionHouseDetails();
+            let tMintKey = constant_1.WRAPPED_SOL_MINT;
+            let userPubkey = new anchor.web3.PublicKey(user);
             const mintKey = new anchor.web3.PublicKey(mint);
-            const User = new anchor.web3.PublicKey(user);
-            const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, User))[0];
-            const tokenSize = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(tokenSizeAdjusted));
-            const buyPrice = new anchor_1.BN(yield (0, util_1.getPriceWithMantissa)(buyPriceAdjusted));
-            const [freeTradeState, freeTradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, User, tokenAccountKey, this.treasuryMint, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
-            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, User, tokenAccountKey, this.treasuryMint, mintKey, tokenSize, buyPrice);
-            let instructions = yield sellerClient.instruction.sell(tradeBump, freeTradeBump, this.programAsSignerBump, buyPriceAdjusted, tokenSizeAdjusted, {
+            const tokenAccountKey = (yield (0, util_1.getAtaForMint)(mintKey, userPubkey))[0];
+            const [programAsSigner, programAsSignerBump] = yield (0, util_1.getAuctionHouseProgramAsSigner)();
+            // const metadata = await getMetadata(mintKey);
+            const [tradeState, tradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, userPubkey, tokenAccountKey, tMintKey, mintKey, tokenSizeAdjusted, buyPriceAdjusted);
+            const [freeTradeState, freeTradeBump] = yield (0, util_1.getAuctionHouseTradeState)(this.auctionHouse, userPubkey, tokenAccountKey, tMintKey, mintKey, tokenSizeAdjusted, new anchor_1.BN(0));
+            let anchorProgram = yield this.getAuctionHouseProgram();
+            const instructions = anchorProgram.instruction.sell(tradeBump, freeTradeBump, programAsSignerBump, buyPriceAdjusted, tokenSizeAdjusted, {
                 accounts: {
-                    wallet: User,
+                    wallet: userPubkey,
                     metadata: yield (0, util_1.getMetadata)(mintKey),
                     tokenAccount: tokenAccountKey,
-                    authority: this.authority,
+                    authority: auctionHouseObj.authority,
                     auctionHouse: this.auctionHouse,
-                    auctionHouseFeeAccount: this.auctionHouseFeeAccount,
+                    auctionHouseFeeAccount: auctionHouseObj.auctionHouseFeeAccount,
                     sellerTradeState: tradeState,
                     freeSellerTradeState: freeTradeState,
                     tokenProgram: spl_token_1.TOKEN_PROGRAM_ID,
                     systemProgram: anchor.web3.SystemProgram.programId,
-                    programAsSigner: this.programAsSigner,
+                    programAsSigner,
                     rent: anchor.web3.SYSVAR_RENT_PUBKEY,
                 },
             });
+            if (auctionHouseObj.requiresSignOff) {
+                instructions.keys
+                    .filter(k => k.pubkey.equals(auctionHouseObj.authority))
+                    .map(k => (k.isSigner = true));
+            }
             return instructions;
         });
     }

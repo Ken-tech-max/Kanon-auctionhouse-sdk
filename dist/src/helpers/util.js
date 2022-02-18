@@ -11,11 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loadAuctionHouseProgram = exports.getTokenAmount = exports.getPriceWithMantissa = exports.decodeMetadata = exports.getAuctionHouseProgramAsSigner = exports.getAuctionHouseBuyerEscrow = exports.getAuctionHouseTradeState = exports.getMetadata = exports.getAtaForMint = exports.hexToBytes = exports.getUnixTimestamp = void 0;
 const anchor_1 = require("@project-serum/anchor");
-const spl_token_1 = require("@solana/spl-token");
 const constant_1 = require("../helpers/constant");
 const web3_js_1 = require("@solana/web3.js");
 const borsh_1 = require("borsh");
 const schema_1 = require("./schema");
+const TOKEN_PROGRAM_ID = new anchor_1.web3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID = new anchor_1.web3.PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
 const getUnixTimestamp = (date) => {
     if (date) {
         return Math.floor(new Date(date).getTime() / 1000);
@@ -44,8 +45,17 @@ const hexToBytes = (hex) => {
     return bytes;
 };
 exports.hexToBytes = hexToBytes;
+// export const getAtaForMint = async (
+//   mint: PublicKey,
+//   owner: PublicKey
+// ): Promise<[PublicKey, number]> => {
+//   return await PublicKey.findProgramAddress(
+//     [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+//     ASSOCIATED_TOKEN_PROGRAM_ID
+//   );
+// };
 const getAtaForMint = (mint, owner) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield web3_js_1.PublicKey.findProgramAddress([owner.toBuffer(), spl_token_1.TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()], spl_token_1.ASSOCIATED_TOKEN_PROGRAM_ID);
+    return yield anchor_1.web3.PublicKey.findProgramAddress([owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()], SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID);
 });
 exports.getAtaForMint = getAtaForMint;
 const getMetadata = (mint) => __awaiter(void 0, void 0, void 0, function* () {
