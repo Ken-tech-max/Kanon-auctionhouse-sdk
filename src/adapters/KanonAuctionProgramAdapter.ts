@@ -14,7 +14,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import * as metaplex from '@metaplex/js';
-import { IDL, AuctionHouse } from '../types/kanon_program_devnet';
+import { IDL, KanonAuctionhouse } from '../types/kanon_program_devnet';
 import { NodeWallet } from "@metaplex/js";
 import { KanonProgramConfig } from '..';
 import idl_devnet from "../idl/kanon_auctionhouse_devnet.json";
@@ -116,7 +116,7 @@ export default class KanonAuctionProgramAdapter {
     return this._program;
   }
 
-  public getAuctionHouseProgram(): Program<AuctionHouse> {
+  public getAuctionHouseProgram(): Program<KanonAuctionhouse> {
     return this.auctionHouseProgram
   }
 

@@ -1,6 +1,6 @@
-export type AuctionHouse = {
+export type KanonAuctionhouse = {
   "version": "0.1.0",
-  "name": "auction_house",
+  "name": "kanon_auctionhouse",
   "instructions": [
     {
       "name": "withdrawFromFee",
@@ -1036,9 +1036,9 @@ export type AuctionHouse = {
   ]
 };
 
-export const IDL: AuctionHouse = {
+export const IDL: KanonAuctionhouse = {
   "version": "0.1.0",
-  "name": "auction_house",
+  "name": "kanon_auctionhouse",
   "instructions": [
     {
       "name": "withdrawFromFee",
@@ -2073,5 +2073,3 @@ export const IDL: AuctionHouse = {
     }
   ]
 };
-
-

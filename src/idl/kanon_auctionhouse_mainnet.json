@@ -1,6 +1,6 @@
 {
   "version": "0.1.0",
-  "name": "auction_house",
+  "name": "kanon_auctionhouse",
   "instructions": [
     {
       "name": "withdrawFromFee",
