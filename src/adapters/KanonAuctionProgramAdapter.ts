@@ -231,7 +231,7 @@ export default class KanonAuctionProgramAdapter {
       )
     )
     return tx;
-  }
+  } 
 
 
   /**
