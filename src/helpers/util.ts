@@ -2,13 +2,20 @@ import { Provider ,BN, web3, Program} from "@project-serum/anchor";
 import {
   ASSOCIATED_TOKEN_PROGRAM_ID,
   Token,
-  TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { TOKEN_METADATA_PROGRAM_ID, AUCTION_HOUSE,AUCTION_HOUSE_PROGRAM_ID,  WRAPPED_SOL_MINT,
 } from "../helpers/constant"
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { BinaryReader, BinaryWriter, deserializeUnchecked } from 'borsh';
 import { Metadata, METADATA_SCHEMA } from "./schema";
+
+const TOKEN_PROGRAM_ID = new web3.PublicKey(
+  'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',
+);
+
+const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID = new web3.PublicKey(
+  'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL',
+);
 
 export const getUnixTimestamp = (date?: Date | string | number) => {
   if (date) {
@@ -43,15 +50,27 @@ export const hexToBytes = (hex: string): any[] => {
   return bytes;
 }
 
-export const getAtaForMint = async (
+// export const getAtaForMint = async (
+//   mint: PublicKey,
+//   owner: PublicKey
+// ): Promise<[PublicKey, number]> => {
+//   return await PublicKey.findProgramAddress(
+//     [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+//     ASSOCIATED_TOKEN_PROGRAM_ID
+//   );
+// };
+
+export const  getAtaForMint = async(
   mint: PublicKey,
   owner: PublicKey
-): Promise<[PublicKey, number]> => {
-  return await PublicKey.findProgramAddress(
+): Promise<[PublicKey, number]> =>{
+  return await web3.PublicKey.findProgramAddress(
     [owner.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
-    ASSOCIATED_TOKEN_PROGRAM_ID
+    SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
   );
 };
+
+
 
 export const getMetadata = async (
   mint: PublicKey,
@@ -67,6 +86,8 @@ export const getMetadata = async (
     )
   )[0];
 };
+
+
 
 export const getAuctionHouseTradeState = async (
   auctionHouse: PublicKey,
@@ -92,6 +113,8 @@ export const getAuctionHouseTradeState = async (
   );
 };
 
+
+
 export const getAuctionHouseBuyerEscrow = async (
   auctionHouse: PublicKey,
   wallet: PublicKey,
@@ -110,6 +133,8 @@ export const getAuctionHouseProgramAsSigner = async (): Promise<
     AUCTION_HOUSE_PROGRAM_ID,
   );
 };
+
+
 
 const METADATA_REPLACE = new RegExp('\u0000', 'g');
 

@@ -53,17 +53,17 @@ export default class KanonAuctionProgramAdapter {
   protected nftMintClient: any; // Represents the NFT to be traded.
 
   // Seeds constants.
-         
+
   protected PREFIX = Buffer.from(bytes.utf8.encode("auction_house"));
   protected FEE_PAYER = Buffer.from(bytes.utf8.encode("fee_payer"));
   protected TREASURY = Buffer.from(bytes.utf8.encode("treasury"));
   protected SIGNER = Buffer.from(bytes.utf8.encode("signer"));
-  
+
 
   // Constant accounts.
-  protected authority : PublicKey = Keypair.generate().publicKey;
-  protected feeWithdrawalDestination:PublicKey = Keypair.generate().publicKey;
-  protected treasuryWithdrawalDestination:  PublicKey = Keypair.generate().publicKey;
+  protected authority: PublicKey = Keypair.generate().publicKey;
+  protected feeWithdrawalDestination: PublicKey = Keypair.generate().publicKey;
+  protected treasuryWithdrawalDestination: PublicKey = Keypair.generate().publicKey;
   protected treasuryWithdrawalDestinationOwner: PublicKey = Keypair.generate().publicKey;
   protected treasuryMint = NATIVE_SOL_MINT;
   protected tokenProgram = TOKEN_PROGRAM_ID;
@@ -74,7 +74,7 @@ export default class KanonAuctionProgramAdapter {
   // Uninitialized constant accounts.
   protected metadata: PublicKey = Keypair.generate().publicKey;
   protected programAsSigner: PublicKey = Keypair.generate().publicKey;
-  protected auctionHouse : PublicKey = Keypair.generate().publicKey;
+  protected auctionHouse: PublicKey = Keypair.generate().publicKey;
   protected auctionHouseTreasury: PublicKey = Keypair.generate().publicKey;
   protected auctionHouseFeeAccount: PublicKey = Keypair.generate().publicKey;
   protected programAsSignerBump = 0;
@@ -87,7 +87,7 @@ export default class KanonAuctionProgramAdapter {
   protected auctionHouseProgram: any;
 
   protected buyerTokenAccount: any;
-  
+
 
   // Seller specific vars.
   protected sellerWallet: any;
@@ -108,8 +108,8 @@ export default class KanonAuctionProgramAdapter {
 
     this._provider = provider;
     this._config = config;
-    this.authority= config.authority ?
-    new PublicKey(config.authority) : Keypair.generate().publicKey;
+    this.authority = config.authority ?
+      new PublicKey(config.authority) : Keypair.generate().publicKey;
   }
 
   public getProgram(): Program {
@@ -143,7 +143,7 @@ export default class KanonAuctionProgramAdapter {
         this.FEE_PAYER,
       ],
       this._program_id
-      );
+    );
     const [_auctionHouseTreasury, _auctionHouseTreasuryBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
         this.PREFIX,
@@ -152,7 +152,7 @@ export default class KanonAuctionProgramAdapter {
       ],
       this._program_id,
     );
-  
+
     const [_programAsSigner, _programAsSignerBump] = await
       anchor.web3.PublicKey.findProgramAddress(
         [
@@ -181,7 +181,7 @@ export default class KanonAuctionProgramAdapter {
     feeWithdrawalDestination: PublicKey,
     sfbp: any,
     canChangeSalePrice: boolean,
-    treasuryWithdrawalDestination:PublicKey,
+    treasuryWithdrawalDestination: PublicKey,
   ) {
     const sellerFeeBasisPoints = parseInt(sfbp);
 
@@ -231,7 +231,7 @@ export default class KanonAuctionProgramAdapter {
       )
     )
     return tx;
-  } 
+  }
 
 
   /**
@@ -239,7 +239,7 @@ export default class KanonAuctionProgramAdapter {
    * deposit into escrow acount
    *  */
 
-  public async deposit(amount: BN , transferAuthority:PublicKey, user:PublicKey) {
+  public async deposit(amount: BN, transferAuthority: PublicKey, user: PublicKey) {
     const User = new anchor.web3.PublicKey(user);
     const [_buyerEscrow, _buyerEscrowBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
@@ -255,7 +255,7 @@ export default class KanonAuctionProgramAdapter {
       accounts: {
         wallet: this._provider.wallet.publicKey, //buyer wallet
         paymentAccount: this._provider.wallet.publicKey,
-        transferAuthority:transferAuthority,
+        transferAuthority: transferAuthority,
         escrowPaymentAccount: _buyerEscrow,
         treasuryMint: this.treasuryMint,
         authority: this.authority,
@@ -276,7 +276,7 @@ export default class KanonAuctionProgramAdapter {
   * 
   * Withdraws from an escrow account
   *  */
-  public async withdraw(amount: BN, transferAuthority: PublicKey, user:PublicKey) {
+  public async withdraw(amount: BN, transferAuthority: PublicKey, user: PublicKey) {
     const User = new anchor.web3.PublicKey(user);
     const [_buyerEscrow, _buyerEscrowBump] = await anchor.web3.PublicKey.findProgramAddress(
       [
@@ -311,7 +311,7 @@ export default class KanonAuctionProgramAdapter {
   /*
   * Posts an offer (BUY)
   */
-  public async postOffer(buyerPrice: BN, tokenSize: BN, mintKey: PublicKey , user:PublicKey) {
+  public async postOffer(buyerPrice: BN, tokenSize: BN, mintKey: PublicKey, user: PublicKey) {
     let buyerClient = this.auctionHouseProgram;
     const zero = new u64(0);
     const User = new anchor.web3.PublicKey(user);
@@ -365,7 +365,7 @@ export default class KanonAuctionProgramAdapter {
       {
         accounts: {
           wallet: User,
-          paymentAccount: isNative ? User: ata,
+          paymentAccount: isNative ? User : ata,
           transferAuthority: isNative
             ? anchor.web3.SystemProgram.programId
             : User,
@@ -391,7 +391,7 @@ export default class KanonAuctionProgramAdapter {
   /*
   Cancels an offer
   */
-  public async cancelOffer(buyerPrice: BN, tokenSize: BN, mint: PublicKey,user:PublicKey) {
+  public async cancelOffer(buyerPrice: BN, tokenSize: BN, mint: PublicKey, user: PublicKey) {
     let buyerClient = this.auctionHouseProgram;
 
     const mintKey = new anchor.web3.PublicKey(mint);
@@ -443,72 +443,145 @@ export default class KanonAuctionProgramAdapter {
   /**
    * Sell Nft
    */
-  public async sellNft(mint: PublicKey, buyPriceAdjusted: any, tokenSizeAdjusted: any , user:PublicKey) {
-    let sellerClient = this.auctionHouseProgram;
-    const mintKey = new anchor.web3.PublicKey(mint);
-    const User = new anchor.web3.PublicKey(user);
+  // public async sellNft(mint: PublicKey, buyPriceAdjusted: any, tokenSizeAdjusted: any, user: PublicKey) {
+  //   let sellerClient = this.auctionHouseProgram;
+  //   const mintKey = new anchor.web3.PublicKey(mint);
+  //   const User = new anchor.web3.PublicKey(user);
 
+  //   const tokenAccountKey = (
+  //     await getAtaForMint(mintKey, User)
+  //   )[0];
+
+  //   const tokenSize = new BN(
+  //     await getPriceWithMantissa(
+  //       tokenSizeAdjusted,
+  //     ),
+  //   );
+
+  //   const buyPrice = new BN(
+  //     await getPriceWithMantissa(
+  //       buyPriceAdjusted,
+  //     ),
+  //   );
+
+  //   const [freeTradeState, freeTradeBump] = await getAuctionHouseTradeState(
+  //     this.auctionHouse,
+  //     User,
+  //     tokenAccountKey,
+  //     this.treasuryMint,
+  //     mintKey,
+  //     tokenSizeAdjusted,
+  //     new BN(0),
+  //   );
+
+  //   const [tradeState, tradeBump] = await getAuctionHouseTradeState(
+  //     this.auctionHouse,
+  //     User,
+  //     tokenAccountKey,
+  //     this.treasuryMint,
+  //     mintKey,
+  //     tokenSize,
+  //     buyPrice,
+  //   );
+
+  //   let instructions = await sellerClient.instruction.sell(
+  //     tradeBump,
+  //     freeTradeBump,
+  //     this.programAsSignerBump,
+  //     buyPriceAdjusted,
+  //     tokenSizeAdjusted,
+  //     {
+  //       accounts: {
+  //         wallet: User,
+  //         metadata: await getMetadata(mintKey),
+  //         tokenAccount: tokenAccountKey,
+  //         authority: this.authority,
+  //         auctionHouse: this.auctionHouse,
+  //         auctionHouseFeeAccount: this.auctionHouseFeeAccount,
+  //         sellerTradeState: tradeState,
+  //         freeSellerTradeState: freeTradeState,
+  //         tokenProgram: TOKEN_PROGRAM_ID,
+  //         systemProgram: anchor.web3.SystemProgram.programId,
+  //         programAsSigner: this.programAsSigner,
+  //         rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+  //       },
+  //     },
+  //   )
+
+  //   return instructions;
+  // }
+
+  public async sellNFT(mint: PublicKey, buyPriceAdjusted: any, tokenSizeAdjusted: any, user: PublicKey) {
+    let auctionHouseObj = await this.getAuctionHouseDetails();
+    let tMintKey = WRAPPED_SOL_MINT
+    let userPubkey = new anchor.web3.PublicKey(user)
+
+    const mintKey = new anchor.web3.PublicKey(mint);
     const tokenAccountKey = (
-      await getAtaForMint(mintKey, User)
+      await getAtaForMint(mintKey, userPubkey)
     )[0];
 
-    const tokenSize = new BN(
-      await getPriceWithMantissa(
-        tokenSizeAdjusted,
-      ),
-    );
+    const [programAsSigner, programAsSignerBump] =
+      await getAuctionHouseProgramAsSigner();
+    // const metadata = await getMetadata(mintKey);
 
-    const buyPrice = new BN(
-      await getPriceWithMantissa(
-        buyPriceAdjusted,
-      ),
+    const [tradeState, tradeBump] = await getAuctionHouseTradeState(
+      this.auctionHouse,
+      userPubkey,
+      tokenAccountKey,
+      tMintKey,
+      mintKey,
+      tokenSizeAdjusted,
+      buyPriceAdjusted,
     );
 
     const [freeTradeState, freeTradeBump] = await getAuctionHouseTradeState(
       this.auctionHouse,
-      User,
+      userPubkey,
       tokenAccountKey,
-      this.treasuryMint,
+      tMintKey,
       mintKey,
       tokenSizeAdjusted,
       new BN(0),
     );
 
-    const [tradeState, tradeBump] = await getAuctionHouseTradeState(
-      this.auctionHouse,
-      User,
-      tokenAccountKey,
-      this.treasuryMint,
-      mintKey,
-      tokenSize,
-      buyPrice,
-    );
 
-    let instructions = await sellerClient.instruction.sell(
+    let anchorProgram = await this.getAuctionHouseProgram();
+    const instructions = anchorProgram.instruction.sell(
       tradeBump,
       freeTradeBump,
-      this.programAsSignerBump,
+      programAsSignerBump,
       buyPriceAdjusted,
       tokenSizeAdjusted,
       {
         accounts: {
-          wallet: User,
+          wallet: userPubkey,
           metadata: await getMetadata(mintKey),
           tokenAccount: tokenAccountKey,
-          authority: this.authority,
+          authority: auctionHouseObj.authority,
           auctionHouse: this.auctionHouse,
-          auctionHouseFeeAccount: this.auctionHouseFeeAccount,
+          auctionHouseFeeAccount: auctionHouseObj.auctionHouseFeeAccount,
           sellerTradeState: tradeState,
           freeSellerTradeState: freeTradeState,
           tokenProgram: TOKEN_PROGRAM_ID,
           systemProgram: anchor.web3.SystemProgram.programId,
-          programAsSigner: this.programAsSigner,
+          programAsSigner,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
         },
-      },
-    )
+      }
+    );
+
+
+    if(auctionHouseObj.requiresSignOff)
+    {
+      instructions.keys
+      .filter(k => k.pubkey.equals(auctionHouseObj.authority))
+      .map(k => (k.isSigner = true));
+    }
 
     return instructions;
+
+
   }
 
   /**
@@ -565,14 +638,14 @@ export default class KanonAuctionProgramAdapter {
         new BN(0),
       );
 
-      const [_buyerEscrow, _buyerEscrowBump] = await anchor.web3.PublicKey.findProgramAddress(
-        [
-          this.PREFIX,
-          this.auctionHouse.toBuffer(),
-          buyerWalletKey.toBuffer(),  // Important here the provider should be buyer
-        ],
-        this._program_id,
-      );
+    const [_buyerEscrow, _buyerEscrowBump] = await anchor.web3.PublicKey.findProgramAddress(
+      [
+        this.PREFIX,
+        this.auctionHouse.toBuffer(),
+        buyerWalletKey.toBuffer(),  // Important here the provider should be buyer
+      ],
+      this._program_id,
+    );
 
     const metadata = await getMetadata(mintKey);
 
@@ -656,7 +729,7 @@ export default class KanonAuctionProgramAdapter {
   /**
    * Withdraws from the fee account
    */
-  public async withdrawFromFee(amount: BN , feeWithdrawalDestination:PublicKey) {
+  public async withdrawFromFee(amount: BN, feeWithdrawalDestination: PublicKey) {
     let authorityClient = this.auctionHouseProgram;
     let acc = {
       authority: this.authority,
@@ -679,7 +752,7 @@ export default class KanonAuctionProgramAdapter {
   /**
    * Withdraws from the treasury account
    */
-  public async withFromTreasury(amount: BN,treasuryWithdrawalDestination:PublicKey) {
+  public async withFromTreasury(amount: BN, treasuryWithdrawalDestination: PublicKey) {
     let authorityClient = this.auctionHouseProgram
     let acc = {
       treasuryMint: this.treasuryMint,
@@ -711,8 +784,8 @@ export default class KanonAuctionProgramAdapter {
     feeWithdrawalDestination: PublicKey,
     sfbp: any,
     canChangeSalePrice: boolean,
-    treasuryWithdrawalDestination:PublicKey
-    ) {
+    treasuryWithdrawalDestination: PublicKey
+  ) {
     let authorityClient = this.auctionHouseProgram;
     const sellerFeeBasisPoints = parseInt(sfbp);
     let twdKey: anchor.web3.PublicKey,
@@ -727,7 +800,7 @@ export default class KanonAuctionProgramAdapter {
     } else {
       fwdKey = new anchor.web3.PublicKey(feeWithdrawalDestination);
     }
-    const tx = new Transaction();  
+    const tx = new Transaction();
 
     tx.add(
       authorityClient.instruction.updateAuctionHouse(
@@ -763,7 +836,7 @@ export default class KanonAuctionProgramAdapter {
    */
   public async getAuctionHouseDetails() {
     let authorityClient = this._program;
-    const auctionHouseObj :any= await authorityClient.account.auctionHouse.fetchNullable(
+    const auctionHouseObj: any = await authorityClient.account.auctionHouse.fetchNullable(
       this.auctionHouse,
     );
     return auctionHouseObj;
